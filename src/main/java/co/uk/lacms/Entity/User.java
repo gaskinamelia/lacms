@@ -1,2 +1,3 @@
-package co.uk.lacms.entity;public class User {
+package co.uk.lacms.Entity;
+public class User {
 }

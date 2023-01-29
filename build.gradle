@@ -9,15 +9,23 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '18'
 
 repositories {
+	google()
 	mavenCentral()
 }
 
 dependencies {
+	implementation 'com.google.gms:google-services:4.3.15'
 //	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation platform('com.google.firebase:firebase-bom:29.3.0')
+	implementation 'com.google.firebase:firebase-analytics-ktx'
+	implementation 'com.google.firebase:firebase-firestore'
+	implementation 'com.google.firebase:firebase-auth'
 	implementation 'com.google.firebase:firebase-admin:9.0.0'
-//	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+
+
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 //	testImplementation 'org.springframework.security:spring-security-test'
 }

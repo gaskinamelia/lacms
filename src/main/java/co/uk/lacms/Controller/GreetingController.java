@@ -1,4 +1,4 @@
-package co.uk.lacms;
+package co.uk.lacms.Controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

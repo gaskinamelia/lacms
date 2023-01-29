@@ -1,2 +1,4 @@
-package co.uk.lacms.service;public class UserService {
+package co.uk.lacms.Service;
+public class UserService {
+
 }
