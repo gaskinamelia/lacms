@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "481232427231",
+    "firebase_url": "https://lacms-665bd-default-rtdb.firebaseio.com",
+    "project_id": "lacms-665bd",
+    "storage_bucket": "lacms-665bd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:481232427231:android:3ec4013923f3331a13716a",
+        "android_client_info": {
+          "package_name": "co.uk.lacms"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "481232427231-musamtj0eqo8ptne76lc4cs32t92uvpg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1VGwEHToTDJf8U5ZyXtK19r4-1tVjiDs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "481232427231-musamtj0eqo8ptne76lc4cs32t92uvpg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
