@@ -13,4 +13,13 @@ public enum UserType {
     public String getDisplayName() {
         return displayName;
     }
+
+    public static UserType fromDisplayName(String displayName) {
+        for (UserType userType : UserType.values()) {
+            if (userType.displayName.equalsIgnoreCase(displayName)) {
+                return userType;
+            }
+        }
+        return null;
+    }
 }

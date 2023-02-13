@@ -1,8 +1,10 @@
 package co.uk.lacms.Service;
 
 import co.uk.lacms.Entity.User;
+import co.uk.lacms.Entity.UserType;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.DocumentReference;
+import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.WriteResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -13,15 +15,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class UserService {
     @Autowired
     private FirebaseAuthManager firebaseAuthManager;
-
     @Autowired
     private FirebaseAuth firebaseAuth;
-
     @Autowired
     private Firestore firestore;
 
@@ -38,7 +39,7 @@ public class UserService {
      * @return token. The idToken for the logged in user.
      * @throws FirebaseAuthException
      */
-    public String autheticateUser(String email, String hashedPassword) throws FirebaseAuthException {
+    public String authenticateUser(String email, String hashedPassword) throws FirebaseAuthException {
         return firebaseAuthManager.auth(email, hashedPassword);
     }
 
@@ -47,9 +48,9 @@ public class UserService {
      * @param idToken The token from firebase associated to the user
      * @return The user object from firebase rest api.
      */
-    public User getUserByToken(String idToken) {
-        return firebaseAuthManager.getAccountInfo(idToken);
-    }
+//    public User getUserByToken(String idToken) {
+//        return firebaseAuthManager.getAccountInfo(idToken);
+//    }
 
     /**
      * Gets the uid for the user by the token from firebase.
@@ -89,12 +90,41 @@ public class UserService {
      * @param email The email associated with the user we want to find
      * @return The user record object of the user we want or null if no user exists
      */
-    public UserRecord getUserByEmail(String email) {
+    public UserRecord getUserRecordByEmail(String email) {
         UserRecord user = null;
 
         try {
             user = firebaseAuth.getUserByEmail(email);
         } catch (FirebaseAuthException e) {
+            return null;
+        }
+
+        return user;
+    }
+
+    /**
+     * Get user object by token from firebase rest api, if no document
+     * exists in firestore return null, else return user object.
+     * @param token The token associated with the user object
+     * @return user object or null if no user exists
+     */
+    public User getUserByToken(String token){
+        DocumentReference docRef = firestore.collection("Users").document(getUidForUserByToken(token));
+        ApiFuture<DocumentSnapshot> future = docRef.get();
+
+        DocumentSnapshot document = null;
+
+        User user = null;
+        try {
+            document = future.get();
+            String email = document.get("email").toString();
+            String firstName = document.get("firstName").toString();
+            String lastName = document.get("lastName").toString();
+            UserType userType = UserType.fromDisplayName(document.get("userType").toString());
+
+            user = new User(getUidForUserByToken(token), email, firstName, lastName, userType, token);
+
+        } catch (InterruptedException | ExecutionException e) {
             return null;
         }
 

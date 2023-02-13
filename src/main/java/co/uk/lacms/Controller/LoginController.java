@@ -1,7 +1,6 @@
 package co.uk.lacms.Controller;
 
 import co.uk.lacms.Entity.User;
-import co.uk.lacms.Entity.UserType;
 import co.uk.lacms.Form.LoginForm;
 import co.uk.lacms.Service.LoginService;
 import co.uk.lacms.Service.UserService;
@@ -51,7 +50,7 @@ public class LoginController {
 
     @PostMapping("/login/submit")
     public String login(@ModelAttribute("loginForm") LoginForm loginForm, Model model) throws FirebaseAuthException {
-        String token = userService.autheticateUser(loginForm.getEmail(), loginForm.getHashedPassword());
+        String token = userService.authenticateUser(loginForm.getEmail(), loginForm.getHashedPassword());
 
         if(!token.isEmpty()) {
 
@@ -59,7 +58,7 @@ public class LoginController {
 
             return "redirect:/dashboard?success";
         } else {
-            return "redirect:/home?error";
+            return "redirect:/login?error";
         }
 
     }
@@ -75,7 +74,7 @@ public class LoginController {
                                BindingResult result,
                                Model model) throws FirebaseAuthException {
 
-        UserRecord existingUser = userService.getUserByEmail(user.getEmail());
+        UserRecord existingUser = userService.getUserRecordByEmail(user.getEmail());
 
         if(existingUser != null && existingUser.getEmail() != null && !existingUser.getEmail().isEmpty()){
             result.rejectValue("email", null,
@@ -89,6 +88,12 @@ public class LoginController {
 
         userService.signUpUser(user);
         return "redirect:/register?success";
+    }
+
+    @PostMapping("/logout")
+    public String logout() {
+        idTokenLoggedInUser = null;
+        return "redirect:/login";
     }
 
 }

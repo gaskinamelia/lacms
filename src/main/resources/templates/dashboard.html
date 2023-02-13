@@ -20,7 +20,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav justify-content-end" th:if="${userExists}">
                 <li class="nav-item" >
-                    <a class="nav-link active" aria-current="page" th:href="@{/profile}">[[${user.getFullName}}]]</a>
+                    <a class="nav-link active" aria-current="page" th:href="@{/profile}">[[${user.getFullName()}]]</a>
                 </li>
                 <li class="nav-item" >
                     <a class="nav-link active" aria-current="page" th:href="@{/profile}">View your profile</a>
@@ -46,7 +46,7 @@
         <h1 class="text-center"> Dashboard </h1>
 
         <div th:if="${userExists}">
-            <p>Welcome, [[${user.getFullName}}]].</p>
+            <p>Welcome, [[${user.getFullName()}]].</p>
         </div>
     </div>
 </div>
