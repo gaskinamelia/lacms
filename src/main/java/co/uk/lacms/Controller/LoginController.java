@@ -39,7 +39,7 @@ public class LoginController {
             UserType loggedInUserType = userService.getUserTypeByToken(token);
 
             if(loggedInUserType.equals(UserType.SW)) {
-                return new ModelAndView("redirect:/dashboardSocialWorker?success");
+                return new ModelAndView("redirect:/sw/dashboard?success");
             } else if (loggedInUserType.equals(UserType.SW_MANAGER)) {
                 return new ModelAndView("redirect:/swm/dashboard?success");
             } else if (loggedInUserType.equals(UserType.LAC)) {
@@ -80,7 +80,7 @@ public class LoginController {
         return new ModelAndView("redirect:/register?success");
     }
 
-    @PostMapping("/logout")
+    @GetMapping("/logout")
     public ModelAndView logout() {
         userService.setLoggedInToken(null);
         return new ModelAndView("redirect:/login");

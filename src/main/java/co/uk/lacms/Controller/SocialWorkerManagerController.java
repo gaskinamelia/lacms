@@ -32,7 +32,6 @@ public class SocialWorkerManagerController {
 
     @GetMapping("/swm/dashboard")
     public ModelAndView socialWorkerManagerDashboard(Model model) {
-
         idTokenLoggedInUser = userService.getLoggedInToken();
 
         if(idTokenLoggedInUser != null) {
@@ -49,7 +48,6 @@ public class SocialWorkerManagerController {
 
             return new ModelAndView("swmDashboard");
         }
-
         return new ModelAndView("redirect:/login");
     }
 
