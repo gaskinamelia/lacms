@@ -6,7 +6,6 @@ import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.WriteResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
@@ -26,6 +25,8 @@ public class UserService {
     @Autowired
     private Firestore firestore;
 
+    public String idTokenLoggedInUser;
+
     public UserService(FirebaseAuthManager firebaseAuthManager, FirebaseAuth firebaseAuth, Firestore firestore) {
         this.firebaseAuthManager = firebaseAuthManager;
         this.firebaseAuth = firebaseAuth;
@@ -42,15 +43,6 @@ public class UserService {
     public String authenticateUser(String email, String hashedPassword) throws FirebaseAuthException {
         return firebaseAuthManager.auth(email, hashedPassword);
     }
-
-    /**
-     * Gets the user object by the token from firebase.
-     * @param idToken The token from firebase associated to the user
-     * @return The user object from firebase rest api.
-     */
-//    public User getUserByToken(String idToken) {
-//        return firebaseAuthManager.getAccountInfo(idToken);
-//    }
 
     /**
      * Gets the uid for the user by the token from firebase.
@@ -78,9 +70,16 @@ public class UserService {
         data.put("firstName", user.getFirstName());
         data.put("lastName", user.getLastName());
         data.put("userType", user.getUserType().getDisplayName());
+
+        if(user.getUserType().equals(UserType.LAC)) {
+            data.put("social_worker_uid", null);
+        } else if(user.getUserType().equals(UserType.SW)) {
+            data.put("social_worker_manager_uid",  null);
+        }
+
         data.put("token", token);
 
-        ApiFuture<WriteResult> result = docRef.set(data);
+        docRef.set(data);
 
         return token;
     }
@@ -129,6 +128,18 @@ public class UserService {
         }
 
         return user;
+    }
+
+    public UserType getUserTypeByToken(String token) {
+        return getUserByToken(token).getUserType();
+    }
+
+    public void setLoggedInToken(String token) {
+        idTokenLoggedInUser = token;
+    }
+
+    public String getLoggedInToken() {
+        return idTokenLoggedInUser;
     }
 
 }

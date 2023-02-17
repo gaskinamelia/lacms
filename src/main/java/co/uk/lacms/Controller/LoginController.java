@@ -1,8 +1,8 @@
 package co.uk.lacms.Controller;
 
 import co.uk.lacms.Entity.User;
+import co.uk.lacms.Entity.UserType;
 import co.uk.lacms.Form.LoginForm;
-import co.uk.lacms.Service.LoginService;
 import co.uk.lacms.Service.UserService;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
@@ -11,66 +11,56 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class LoginController {
-
-    @Autowired
-    LoginService loginService;
-
     @Autowired
     UserService userService;
 
-    private String idTokenLoggedInUser;
-
-    public LoginController(LoginService loginService, UserService userService) {
-        this.loginService = loginService;
+    public LoginController(UserService userService) {
         this.userService = userService;
     }
 
-    @GetMapping("/dashboard")
-    public String dashboard(Model model) {
-        if(idTokenLoggedInUser != null) {
-            User user = userService.getUserByToken(idTokenLoggedInUser);
-            model.addAttribute("user", user);
-            model.addAttribute("userExists", true);
-        } else {
-            model.addAttribute("userExists", false);
-        }
-
-        return "dashboard";
-    }
-
     @GetMapping("/login")
-    public String loginForm(Model model) {
+    public ModelAndView loginForm(Model model) {
         model.addAttribute("loginForm", new LoginForm());
-
-        return "login";
+        return new ModelAndView("login");
     }
 
     @PostMapping("/login/submit")
-    public String login(@ModelAttribute("loginForm") LoginForm loginForm, Model model) throws FirebaseAuthException {
+    public ModelAndView login(@ModelAttribute("loginForm") LoginForm loginForm, Model model) throws FirebaseAuthException {
         String token = userService.authenticateUser(loginForm.getEmail(), loginForm.getHashedPassword());
 
         if(!token.isEmpty()) {
 
-            idTokenLoggedInUser = token;
+            userService.setLoggedInToken(token);
 
-            return "redirect:/dashboard?success";
+            UserType loggedInUserType = userService.getUserTypeByToken(token);
+
+            if(loggedInUserType.equals(UserType.SW)) {
+                return new ModelAndView("redirect:/dashboardSocialWorker?success");
+            } else if (loggedInUserType.equals(UserType.SW_MANAGER)) {
+                return new ModelAndView("redirect:/swm/dashboard?success");
+            } else if (loggedInUserType.equals(UserType.LAC)) {
+                return new ModelAndView("redirect:/dashboardLAC?success");
+            } else {
+                return new ModelAndView("redirect:/dashboard?success");
+            }
         } else {
-            return "redirect:/login?error";
+            return new ModelAndView("redirect:/login?error");
         }
 
     }
 
     @GetMapping("/register")
-    public String showRegistrationForm(Model model) {
+    public ModelAndView showRegistrationForm(Model model) {
         model.addAttribute("user", new User());
-        return "register";
+        return new ModelAndView("register");
     }
 
     @PostMapping("/register/save")
-    public String registration(@ModelAttribute("user") User user,
+    public ModelAndView registration(@ModelAttribute("user") User user,
                                BindingResult result,
                                Model model) throws FirebaseAuthException {
 
@@ -83,17 +73,17 @@ public class LoginController {
 
         if(result.hasErrors()){
             model.addAttribute("user", user);
-            return "/register";
+            return new ModelAndView("/register");
         }
 
         userService.signUpUser(user);
-        return "redirect:/register?success";
+        return new ModelAndView("redirect:/register?success");
     }
 
     @PostMapping("/logout")
-    public String logout() {
-        idTokenLoggedInUser = null;
-        return "redirect:/login";
+    public ModelAndView logout() {
+        userService.setLoggedInToken(null);
+        return new ModelAndView("redirect:/login");
     }
 
 }

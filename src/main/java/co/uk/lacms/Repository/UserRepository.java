@@ -1,2 +1,3 @@
-package co.uk.lacms.repository;public class UserRepository {
+package co.uk.lacms.repository;
+public class UserRepository {
 }

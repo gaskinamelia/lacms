@@ -2,6 +2,7 @@ package co.uk.lacms.Entity;
 
 public enum UserType {
     SW("Social worker"),
+    SW_MANAGER("Social worker manager"),
     LAC("Looked after child"),
     PA("Personal advisor");
 
@@ -19,6 +20,7 @@ public enum UserType {
             if (userType.displayName.equalsIgnoreCase(displayName)) {
                 return userType;
             }
+
         }
         return null;
     }
