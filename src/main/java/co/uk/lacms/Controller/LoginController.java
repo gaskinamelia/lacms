@@ -43,7 +43,7 @@ public class LoginController {
             } else if (loggedInUserType.equals(UserType.SW_MANAGER)) {
                 return new ModelAndView("redirect:/swm/dashboard?success");
             } else if (loggedInUserType.equals(UserType.LAC)) {
-                return new ModelAndView("redirect:/dashboardLAC?success");
+                return new ModelAndView("redirect:/lac/dashboard?success");
             } else {
                 return new ModelAndView("redirect:/dashboard?success");
             }
