@@ -1,6 +1,5 @@
 package co.uk.lacms.Service;
 
-import co.uk.lacms.Entity.User;
 import com.google.firebase.ErrorCode;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.gson.JsonElement;
@@ -113,24 +112,24 @@ public class FirebaseAuthManager {
      * @param token An ID token from Firebase.
      * @return A user object with the email and UID returned by Firebase.
      */
-    public User getAccountInfo(String token) {
-        try {
-            HttpClient httpclient = HttpClients.createDefault();
-            HttpPost httppost = new HttpPost(BASE_URL + OPERATION_ACCOUNT_INFO + "?key=" + firebaseKey);
-            List<NameValuePair> params = new ArrayList<NameValuePair>(1);
-            params.add(new BasicNameValuePair("idToken", token));
-            httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
-            HttpEntity entity = httpclient.execute(httppost).getEntity();
-
-            JsonParser jp = new JsonParser();
-            JsonElement root = jp.parse(new InputStreamReader(entity.getContent()));
-            JsonObject rootObj = root.getAsJsonObject();
-
-            JsonObject userObj = rootObj.get("users").getAsJsonArray().get(0).getAsJsonObject();
-
-            return new User(userObj.get("localId").getAsString(), userObj.get("email").getAsString(), null, null, null, token);
-        } catch (IOException e) { System.out.println(e.getMessage()); return null; }
-    }
+//    public User getAccountInfo(String token) {
+//        try {
+//            HttpClient httpclient = HttpClients.createDefault();
+//            HttpPost httppost = new HttpPost(BASE_URL + OPERATION_ACCOUNT_INFO + "?key=" + firebaseKey);
+//            List<NameValuePair> params = new ArrayList<NameValuePair>(1);
+//            params.add(new BasicNameValuePair("idToken", token));
+//            httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
+//            HttpEntity entity = httpclient.execute(httppost).getEntity();
+//
+//            JsonParser jp = new JsonParser();
+//            JsonElement root = jp.parse(new InputStreamReader(entity.getContent()));
+//            JsonObject rootObj = root.getAsJsonObject();
+//
+//            JsonObject userObj = rootObj.get("users").getAsJsonArray().get(0).getAsJsonObject();
+//
+//            return new User(userObj.get("localId").getAsString(), userObj.get("email").getAsString(), null, null, null, token);
+//        } catch (IOException e) { System.out.println(e.getMessage()); return null; }
+//    }
 
     /**
      * Exchamge an ID token with the Firebase Auth REST API for the users UID object.

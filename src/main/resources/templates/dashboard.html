@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org"
->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Registration and Login System</title>
@@ -13,12 +11,12 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" th:href="@{/}">LACMS</a>
+        <a class="navbar-brand" th:href="@{/dashboard}">LACMS</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav justify-content-end" th:if="${userExists}">
+            <ul class="navbar-nav justify-content-end">
                 <li class="nav-item" >
                     <a class="nav-link active" aria-current="page" th:href="@{/profile}">[[${user.getFullName()}]]</a>
                 </li>
@@ -29,24 +27,23 @@
                     <a class="nav-link active" aria-current="page" th:href="@{/logout}">Logout</a>
                 </li>
             </ul>
-            <ul class="navbar-nav justify-content-end" th:if="${!userExists}">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" th:href="@{/register}">Register</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" th:href="@{/login}">Login</a>
-                </li>
-            </ul>
         </div>
     </div>
 </nav>
 <br /><br />
 <div class="container">
     <div class="row">
+        <div th:if="${param.success}">
+            <div>
+                <p>Welcome, [[${user.getFullName()}]].</p>
+            </div>
+        </div>
         <h1 class="text-center"> Dashboard </h1>
 
-        <div th:if="${userExists}">
-            <p>Welcome, [[${user.getFullName()}]].</p>
+        <div class="card">
+            <div class="card-header">
+                <h2 class="text-center">Unassigned Looked After Children profiles</h2>
+            </div>
         </div>
     </div>
 </div>
