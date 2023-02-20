@@ -13,17 +13,10 @@ import java.util.concurrent.ExecutionException;
 
 @Service
 public class SocialWorkerManagerDashboardService {
-
-    @Autowired
-    private FirebaseAuthManager firebaseAuthManager;
-    @Autowired
-    private FirebaseAuth firebaseAuth;
     @Autowired
     private Firestore firestore;
 
-    public SocialWorkerManagerDashboardService(FirebaseAuthManager firebaseAuthManager, FirebaseAuth firebaseAuth, Firestore firestore) {
-        this.firebaseAuthManager = firebaseAuthManager;
-        this.firebaseAuth = firebaseAuth;
+    public SocialWorkerManagerDashboardService(Firestore firestore) {
         this.firestore = firestore;
     }
 

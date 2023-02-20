@@ -32,46 +32,54 @@
 </nav>
 <br /><br />
 <div class="container">
+    <div th:if="${param.success}">
+        <p>Welcome, [[${user.getFullName()}]].</p>
+    </div>
+
     <div class="row">
-        <div th:if="${param.success}">
-            <div>
-                <p>Welcome, [[${user.getFullName()}]].</p>
-            </div>
-        </div>
         <h1 class="text-left"> Dashboard </h1>
+    </div>
 
-        <div class="card col-12">
-            <div class="card-header">
-                <h2 class="text-left">Unassigned Looked After Children</h2>
-            </div>
-
-            <div class="card-body">
-                <div th:if="${lacsWithoutSW.size() == 0}">
-                    <p>No LAC profiles without social workers</p>
+    <div class="row">
+        <div class="col-md-8 justify-content-md-center">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-left">Unassigned Looked After Children</h2>
                 </div>
-                <div class="card" th:else th:each="lac : ${lacsWithoutSW}" >
-                    <form method="post" role="form" th:action="@{/swm/update/lac_user}" th:object="${updateLacForm}" class="form">
-                        <h2 class="text-left">[[${lac.getFullName()}]]</h2>
-                        <p>Email address: [[${lac.getEmail()}]]</p>
+                <div class="card-body">
+                    <div th:if="${lacsWithoutSW.size() == 0}">
+                        <p class="card-text">No LAC profiles without social workers</p>
+                    </div>
+                    <div th:else th:each="lac : ${lacsWithoutSW}">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="text-left">[[${lac.getFullName()}]]</h2>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">Email address: [[${lac.getEmail()}]]</p>
 
-                        <div class="form-group" th:hidden="true">
-                            <input type="text" id="lacUid" name="lacUid" class="form-control" th:value="${lac.getUid()}"/>
-                        </div>
+                                <form method="post" role="form" th:action="@{/swm/update/lac_user}" th:object="${updateLacForm}" class="form">
+                                    <div class="form-group" th:hidden="true">
+                                        <input type="text" id="lacUid" name="lacUid" class="form-control" th:value="${lac.getUid()}"/>
+                                    </div>
 
-                        <div class="form-group">
-                            <label class="form-label">Select social worker</label>
-                            <select class="custom-select" id="swUid" name="swUid">
-                                <option th:each="socialWorker : ${socialWorkerUsers}" th:value="${socialWorker.getUid()}" th:text="${socialWorker.getFullName()}"></option>
-                            </select>
-                        </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Select social worker</label>
+                                        <select class="custom-select" id="swUid" name="swUid">
+                                            <option th:each="socialWorker : ${socialWorkerUsers}" th:value="${socialWorker.getUid()}" th:text="${socialWorker.getFullName()}"></option>
+                                        </select>
+                                    </div>
 
-                        <div class="form-group">
-                            <button class="btn btn-primary" type="submit">Assign social worker</button>
+                                    <div class="form-group">
+                                        <button class="btn btn-primary" type="submit">Assign social worker</button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
-                    </form>
+                        <br>
+                    </div>
                 </div>
             </div>
-            <br>
         </div>
     </div>
 </div>
