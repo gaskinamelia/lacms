@@ -1,5 +1,6 @@
 package co.uk.lacms.Controller;
 
+import co.uk.lacms.Entity.Comment;
 import co.uk.lacms.Entity.MeetingNote;
 import co.uk.lacms.Entity.User;
 import co.uk.lacms.Entity.UserType;
@@ -11,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 @Controller
@@ -78,15 +80,28 @@ public class MeetingNoteController {
         User lacUser = userService.getUserByUid(lacUid);
 
         MeetingNote meetingNote = meetingNoteService.getMeetingNoteForId(meetingNoteId);
-
+        Comment recentComment = meetingNoteService.getMostRecentCommentForMeetingId(meetingNoteId);
 
         model.addAttribute("meetingNote", meetingNote);
         model.addAttribute("viewing", true);
         model.addAttribute("user", user);
         model.addAttribute("lacUser", lacUser);
+        model.addAttribute("recentComment", meetingNoteService.getMostRecentCommentForMeetingId(meetingNoteId));
+
+        if(recentComment != null) {
+            User commentUser = userService.getUserByUid(recentComment.getCreatedByUserUid());
+            model.addAttribute("recentCommenter", commentUser);
+        }
+
         if(user.getUserType().equals(UserType.SW)) {
             model.addAttribute("canEditDelete", true);
+            model.addAttribute("isLacUser", false);
+        } else if(user.getUserType().equals(UserType.LAC)) {
+            model.addAttribute("isLacUser", true);
         }
+
+        model.addAttribute("canComment", true);
+        model.addAttribute("comment", new Comment());
 
         return new ModelAndView("viewMeetingNote");
     }
@@ -127,5 +142,45 @@ public class MeetingNoteController {
 
         return new ModelAndView("redirect:/sw/dashboard");
     }
+
+    @PostMapping("/addComment/{lacUid}/{meetingNoteId}")
+    public ModelAndView addComment(@PathVariable("meetingNoteId") String meetingNoteId,
+                                   @PathVariable("lacUid") String lacUid,
+                                   @ModelAttribute("comment") Comment comment,
+                                   Model model) {
+
+        comment.setCreatedDateTime(LocalDateTime.now());
+
+        meetingNoteService.addComments(comment);
+
+        return new ModelAndView("redirect:/viewMeetingNote/" + lacUid + "/" + meetingNoteId);
+    }
+
+    @PostMapping("/archiveNote/{meetingNoteId}")
+    public ModelAndView archiveNote(@PathVariable("meetingNoteId") String meetingNoteId,
+                                    Model model) {
+        meetingNoteService.archiveNote(meetingNoteId);
+        return new ModelAndView("redirect:/lac/dashboard" );
+
+    }
+
+    @GetMapping("/viewAllComments/{meetingNoteId}")
+    public ModelAndView viewAllComments(@PathVariable("meetingNoteId") String meetingNoteId,
+                                        Model model) {
+        idTokenLoggedInUser = userService.getLoggedInToken();
+
+        User user = userService.getUserByToken(idTokenLoggedInUser);
+
+        MeetingNote meetingNote = meetingNoteService.getMeetingNoteForId(meetingNoteId);
+
+        ArrayList<Comment> comments = meetingNoteService.getAllCommentsForMeetingNote(meetingNoteId);
+
+        model.addAttribute("user", user);
+        model.addAttribute("meetingNote", meetingNote);
+        model.addAttribute("comments", comments);
+
+        return new ModelAndView("viewAllComments");
+    }
+
 
 }
