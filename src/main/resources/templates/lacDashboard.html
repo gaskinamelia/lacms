@@ -32,25 +32,64 @@
 </nav>
 <br /><br />
 <div class="container">
-  <div class="row">
-    <div th:if="${param.success}">
-      <div>
-        <p>Welcome, [[${user.getFullName()}]].</p>
-      </div>
-    </div>
-    <h1 class="text-left"> Dashboard </h1>
-    <div th:if="${socialWorkerUser == null}">
-      <p>There is no social worker assigned to you currently.</p>
-    </div>
+  <div th:if="${param.success}">
+    <p>Welcome, [[${user.getFullName()}]].</p>
+  </div>
 
-    <div class="card col-md-8 justify-content-md-center" th:else>
-      <div class="card-body">
-        <h2 class="card-title">[[${socialWorkerUser.getFullName()}]]</h2>
-        <p class="card-text">[[${socialWorkerUser.getEmail()}]]</p>
-<!--        <a href="#" class="btn btn-primary">Go somewhere</a>-->
+  <div class="row">
+    <h1 class="text-left"> Dashboard </h1>
+  </div>
+
+  <div class="row">
+    <div class="col-md-8 justify-content-md-center">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="text-left">Social worker details</h2>
+        </div>
+        <div class="card-body">
+          <div th:if="${socialWorkerUser == null}">
+            <p class="card-text">There is no social worker assigned to you currently.</p>
+          </div>
+          <div th:else>
+            <h2 class="card-title">[[${socialWorkerUser.getFullName()}]]</h2>
+            <p class="card-text">[[${socialWorkerUser.getEmail()}]]</p>
+            <!--        <a href="#" class="btn btn-primary">Go somewhere</a>-->
+          </div>
+        </div>
       </div>
     </div>
   </div>
+  <br /><br />
+  <div class="row">
+    <div class="col-md-8 justify-content-md-center">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="text-center">Meeting notes</h2>
+        </div>
+        <div class="card-body">
+          <div th:if="${meetingNotes.size() == 0}">
+            <p class="card-text">There are no meeting notes recorded.</p>
+          </div>
+          <div th:else th:each="mn : ${meetingNotes}">
+            <div class="card">
+              <div class="card-header">
+                <h2 class="text-left">[[${mn.getTitle()}]]</h2>
+              </div>
+              <div class="card-body">
+                <p class="card-text">[[${mn.getDisplayCreatedDate()}]]</p>
+                <p class="card-text">[[${#strings.abbreviate(mn.getNotes(),100)}]]</p>
+                <div class="form-group">
+                  <a th:href="@{'/viewMeetingNote/' + ${user.getUid()} + '/' + ${mn.getId()}}" class="btn btn-primary">View full note</a>
+                  <!--          <a th:href="@{'/updateMeetingNote/' + ${lacUser.getUid()} + '/' + ${mn.getId()}}" class="btn btn-secondary">Update</a>-->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br /><br />
 </div>
 </body>
 </html>

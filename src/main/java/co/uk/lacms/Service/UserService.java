@@ -142,4 +142,28 @@ public class UserService {
         return idTokenLoggedInUser;
     }
 
+    public User getUserByUid(String uid) {
+        DocumentReference docRef = firestore.collection("Users").document(uid);
+        ApiFuture<DocumentSnapshot> future = docRef.get();
+
+        DocumentSnapshot document = null;
+
+        User user = null;
+        try {
+            document = future.get();
+            String email = document.get("email").toString();
+            String firstName = document.get("firstName").toString();
+            String lastName = document.get("lastName").toString();
+            UserType userType = UserType.fromDisplayName(document.get("userType").toString());
+            String token = document.get("token").toString();
+
+            user = new User(uid, email, firstName, lastName, userType, token);
+
+        } catch (InterruptedException | ExecutionException e) {
+            return null;
+        }
+
+        return user;
+    }
+
 }

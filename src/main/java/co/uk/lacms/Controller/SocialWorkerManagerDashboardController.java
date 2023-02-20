@@ -15,7 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.ArrayList;
 
 @Controller
-public class SocialWorkerManagerController {
+public class SocialWorkerManagerDashboardController {
 
     @Autowired
     UserService userService;
@@ -25,7 +25,7 @@ public class SocialWorkerManagerController {
 
     private String idTokenLoggedInUser;
 
-    public SocialWorkerManagerController(UserService userService, SocialWorkerManagerDashboardService socialWorkerManagerDashboardService) {
+    public SocialWorkerManagerDashboardController(UserService userService, SocialWorkerManagerDashboardService socialWorkerManagerDashboardService) {
         this.userService = userService;
         this.socialWorkerManagerDashboardService = socialWorkerManagerDashboardService;
     }
