@@ -1,10 +1,12 @@
 package co.uk.lacms.Service;
 
+import co.uk.lacms.Entity.Comment;
 import co.uk.lacms.Entity.MeetingNote;
 import co.uk.lacms.Entity.User;
 import co.uk.lacms.Entity.UserType;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +23,12 @@ public class MeetingNoteService {
     @Autowired
     private Firestore firestore;
 
-    public MeetingNoteService(Firestore firestore) {
+    @Autowired
+    private UserService userService;
+
+    public MeetingNoteService(Firestore firestore, UserService userService) {
         this.firestore = firestore;
+        this.userService = userService;
     }
 
     /**
@@ -171,6 +177,72 @@ public class MeetingNoteService {
         documentReference.update("updated_by", meetingNote.getUpdatedByUserUid());
         documentReference.update("updated_date", updatedDate);
         documentReference.update("archived", meetingNote.isArchived());
+    }
+
+    public void addComments(Comment comment) {
+        DocumentReference documentReference = firestore.collection("Comments").document();
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("created_by_user", comment.getCreatedByUserUid());
+
+        //Changed to date type as firestore only accepts Date for Timestamp
+        Instant instant = comment.getCreatedDateTime().toInstant(ZoneOffset.UTC);
+        Date createdDate = Date.from(instant);
+
+        data.put("created_date", createdDate);
+        data.put("comments", comment.getComments());
+        data.put("meetingId", comment.getMeetingId());
+
+        documentReference.set(data);
+    }
+
+    public ArrayList<Comment> getAllCommentsForMeetingNote(String meetingNoteId) {
+        ArrayList<Comment> result = new ArrayList<>();
+
+        CollectionReference comments = firestore.collection("Comments");
+
+        Query query = comments
+                .whereEqualTo("meetingId", meetingNoteId)
+                .orderBy("created_date", Query.Direction.DESCENDING);
+
+        ApiFuture<QuerySnapshot> querySnapshot = query.get();
+
+        try {
+            for(DocumentSnapshot document : querySnapshot.get().getDocuments()) {
+
+                Comment comment = new Comment(
+                        document.getId(),
+                        document.get("comments").toString(),
+                        document.get("created_by_user").toString(),
+                        convertStringDateToLocalDateTime(document.get("created_date").toString()),
+                        meetingNoteId);
+
+                User user = userService.getUserByUid(comment.getCreatedByUserUid());
+
+                comment.setCreatedUserName(user.getFullName());
+
+                result.add(comment);
+            }
+        } catch (InterruptedException | ExecutionException | ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+        return result;
+    }
+
+    public Comment getMostRecentCommentForMeetingId(String meetingId) {
+        ArrayList<Comment> comments = getAllCommentsForMeetingNote(meetingId);
+        if(comments.size() > 0 ){
+            return comments.get(0);
+        } else {
+            return null;
+        }
+    }
+
+    public void archiveNote(String meetingNoteId) {
+        DocumentReference documentReference = firestore.collection("MeetingNotes").document(meetingNoteId);
+
+        documentReference.update("archived", true);
     }
 }
 
