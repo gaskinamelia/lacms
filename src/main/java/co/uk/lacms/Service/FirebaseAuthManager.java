@@ -70,7 +70,7 @@ public class FirebaseAuthManager {
             JsonObject rootObj = root.getAsJsonObject();
 
             if (rootObj.get("error") != null) {
-                throw new FirebaseAuthException(ErrorCode.UNKNOWN, rootObj.get("error").getAsJsonObject().get("message").getAsString(), null, null, null);
+                throw new FirebaseAuthException(ErrorCode.UNAUTHENTICATED, rootObj.get("error").getAsJsonObject().get("message").getAsString(), null, null, null);
             }
             token = rootObj.get("idToken").getAsString();
         } catch (IOException e) { System.out.println(e.getMessage()); return null; }
@@ -101,35 +101,12 @@ public class FirebaseAuthManager {
             JsonObject rootObj = root.getAsJsonObject();
 
             if (rootObj.get("error") != null) {
-                throw new FirebaseAuthException(ErrorCode.UNKNOWN, rootObj.get("error").getAsJsonObject().get("message").getAsString(), null, null, null);
+                throw throwFirebaseException(rootObj);
             }
             token = rootObj.get("idToken").getAsString();
         } catch (IOException e) { System.out.println(e.getMessage()); return null; }
         return token;
     }
-    /**
-     * Exchange an ID token with the Firebase Auth REST API for a User object.
-     * @param token An ID token from Firebase.
-     * @return A user object with the email and UID returned by Firebase.
-     */
-//    public User getAccountInfo(String token) {
-//        try {
-//            HttpClient httpclient = HttpClients.createDefault();
-//            HttpPost httppost = new HttpPost(BASE_URL + OPERATION_ACCOUNT_INFO + "?key=" + firebaseKey);
-//            List<NameValuePair> params = new ArrayList<NameValuePair>(1);
-//            params.add(new BasicNameValuePair("idToken", token));
-//            httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
-//            HttpEntity entity = httpclient.execute(httppost).getEntity();
-//
-//            JsonParser jp = new JsonParser();
-//            JsonElement root = jp.parse(new InputStreamReader(entity.getContent()));
-//            JsonObject rootObj = root.getAsJsonObject();
-//
-//            JsonObject userObj = rootObj.get("users").getAsJsonArray().get(0).getAsJsonObject();
-//
-//            return new User(userObj.get("localId").getAsString(), userObj.get("email").getAsString(), null, null, null, token);
-//        } catch (IOException e) { System.out.println(e.getMessage()); return null; }
-//    }
 
     /**
      * Exchamge an ID token with the Firebase Auth REST API for the users UID object.
@@ -155,43 +132,14 @@ public class FirebaseAuthManager {
         } catch (IOException e) { System.out.println(e.getMessage()); return null; }
     }
 
-    /**
-     * Send a reset password email via Firebase.
-     * @param email The email address to send the reset password email to.
-     */
-    public void sendResetPasswordLink(String email) {
-        try {
-            HttpClient httpclient = HttpClients.createDefault();
-            HttpPost httppost = new HttpPost(BASE_URL + OPERATION_SEND_PASSWORD_RESET + "?key=" + firebaseKey);
-            List<NameValuePair> params = new ArrayList<NameValuePair>(2);
-            params.add(new BasicNameValuePair("requestType", "PASSWORD_RESET"));
-            params.add(new BasicNameValuePair("email", email));
-            httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
-            httpclient.execute(httppost);
-        } catch (IOException e) { e.printStackTrace(); }
-    }
+    private FirebaseAuthException throwFirebaseException(JsonObject rootObj) {
+        switch(rootObj.get("error").getAsJsonObject().get("message").getAsString()) {
+            case "EMAIL_EXISTS" :
+                return new FirebaseAuthException(ErrorCode.ALREADY_EXISTS, rootObj.get("error").getAsJsonObject().get("message").getAsString(), null, null, null);
+            case "INVALID_EMAIL" :
+                return new FirebaseAuthException(ErrorCode.INVALID_ARGUMENT, rootObj.get("error").getAsJsonObject().get("message").getAsString(), null, null, null);
+        }
 
-    /**
-     * Exchange a refresh token with the Firebase Auth REST API for a new ID token.
-     * @param refreshToken The refresh token used to receive an ID token.
-     * @return A new ID token from Firebase.
-     */
-    public String[] exchangeRefreshToken(String refreshToken) {
-        try {
-            HttpClient httpclient = HttpClients.createDefault();
-            HttpPost httppost = new HttpPost("https://securetoken.googleapis.com/v1/token?key="+ firebaseKey);
-            List<NameValuePair> params = new ArrayList<NameValuePair>(2);
-            params.add(new BasicNameValuePair("grant_type", "refresh_token"));
-            params.add(new BasicNameValuePair("refresh_token", refreshToken));
-            httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
-            HttpEntity entity = httpclient.execute(httppost).getEntity();
-            if (entity != null) {
-                JsonParser jp = new JsonParser();
-                JsonElement root = jp.parse(new InputStreamReader(entity.getContent()));
-                JsonObject rootObj = root.getAsJsonObject();
-                return new String[]{ rootObj.get("id_token").getAsString(), rootObj.get("refresh_token").getAsString() };
-            }
-        } catch (IOException e) { e.printStackTrace(); }
-        return null;
+        return new FirebaseAuthException(ErrorCode.UNKNOWN, rootObj.get("error").getAsJsonObject().get("message").getAsString(), null, null, null);
     }
 }

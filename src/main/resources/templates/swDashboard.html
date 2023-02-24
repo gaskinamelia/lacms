@@ -47,10 +47,10 @@
           <h2 class="text-left">Looked After Children</h2>
         </div>
         <div class="card-body">
-          <div th:if="${lacs.size() == 0}">
+          <div th:if="${lacPage.getTotalPages() == 0}">
             <p class="card-text">No looked after children profiles assigned to you. Please talk to your manager.</p>
           </div>
-          <div th:else th:each="lac : ${lacs}" >
+          <div th:else th:each="lac : ${lacPage.content}" >
             <div class="card">
               <div class="card-header">
                 <h2 class="text-left">[[${lac.getFullName()}]]</h2>
@@ -65,10 +65,21 @@
             </div>
             <br>
           </div>
-      </div>
+        </div>
       </div>
     </div>
   </div>
+
+  <div class="row">
+    <nav aria-label="Pagination" th:if="${lacPage.totalPages > 0}">
+      <ul class="pagination justify-content-center">
+        <li th:each="pageNumber : ${pageNumbers}" th:class="${pageNumber==lacPage.number + 1} ? 'page-item active' : 'page-item'">
+          <a th:href="@{/sw/dashboard(size=${lacPage.size}, page=${pageNumber})}" th:text="${pageNumber} " class="page-link"></a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
 </div>
 </body>
 </html>

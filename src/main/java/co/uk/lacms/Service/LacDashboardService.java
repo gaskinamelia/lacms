@@ -8,18 +8,17 @@ import com.google.firebase.auth.FirebaseAuth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 @Service
 public class LacDashboardService {
 
     @Autowired
-    private FirebaseAuthManager firebaseAuthManager;
+    private final FirebaseAuthManager firebaseAuthManager;
     @Autowired
-    private FirebaseAuth firebaseAuth;
+    private final FirebaseAuth firebaseAuth;
     @Autowired
-    private Firestore firestore;
+    private final Firestore firestore;
 
     public LacDashboardService(FirebaseAuthManager firebaseAuthManager, FirebaseAuth firebaseAuth, Firestore firestore) {
         this.firebaseAuthManager = firebaseAuthManager;

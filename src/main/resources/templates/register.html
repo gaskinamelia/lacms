@@ -40,6 +40,13 @@
             </div>
             <div class="card-body">
                 <form method="post" role="form" th:action="@{/register/save}" th:object="${user}">
+                    <div th:if="${#fields.hasAnyErrors()}" class="p-3 mb-2 bg-danger text-dark">
+                        <p>There are some errors on this page.</p>
+                        <ul>
+                            <li th:each="err : ${#fields.allErrors()}" th:text="${err}" />
+                        </ul>
+                    </div>
+
                     <div class="form-group mb-3">
                         <label class="form-label">First name</label>
                         <input class="form-control" id="firstName" name="firstName" placeholder="Enter your first name" th:field="*{firstName}" type="text"/>
@@ -67,6 +74,7 @@
                     <div class="form-group mb-3">
                         <label class="form-label">Type of user</label>
                         <select class="form-control" id="userType" name="userType">
+                            <option value="" disabled selected hidden>Please Choose...</option>
                             <option th:each="type: ${T(co.uk.lacms.Entity.UserType).values()}" th:value="${type}" th:text="${type.getDisplayName()}"></option>
                         </select>
                         <p th:errors = "*{userType}" class="text-danger" th:if="${#fields.hasErrors('userType')}"></p>

@@ -42,13 +42,13 @@
   <div class="row">
     <div class="col-md-8 justify-content-md-center">
       <div class="card">
-        <div th:if="${meetingNotes.size() == 0}">
+        <div th:if="${meetingNotePage.getTotalPages() == 0}">
           <p class="card-text">[[${lacUser.getFullName()}]] has no meeting notes recorded.</p>
           <span> Add meeting note for [[${lacUser.getFullName()}]]
             <a th:href="@{'/addMeetingNote/' + ${lacUser.getUid()}}">here</a>
           </span>
         </div>
-        <div th:else th:each="mn : ${meetingNotes}">
+        <div th:else th:each="mn : ${meetingNotePage.content}">
           <div class="card-header">
             <h2 class="text-left">[[${mn.getTitle()}]]</h2>
           </div>
@@ -66,6 +66,16 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <div class="row">
+    <nav aria-label="Pagination" th:if="${meetingNotePage.totalPages > 0}">
+      <ul class="pagination justify-content-center">
+        <li th:each="pageNumber : ${pageNumbers}" th:class="${pageNumber==meetingNotePage.number + 1} ? 'page-item active' : 'page-item'">
+          <a th:href="@{/viewMeetingNotes/{lacUid}(lacUid=${lacUser.getUid()}, size=${meetingNotePage.size}, page=${pageNumber})}" th:text="${pageNumber} " class="page-link"></a>
+        </li>
+      </ul>
+    </nav>
   </div>
 </div>
 </body>

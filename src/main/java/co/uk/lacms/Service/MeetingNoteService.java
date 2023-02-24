@@ -3,10 +3,8 @@ package co.uk.lacms.Service;
 import co.uk.lacms.Entity.Comment;
 import co.uk.lacms.Entity.MeetingNote;
 import co.uk.lacms.Entity.User;
-import co.uk.lacms.Entity.UserType;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +19,10 @@ import java.util.concurrent.ExecutionException;
 @Service
 public class MeetingNoteService {
     @Autowired
-    private Firestore firestore;
+    private final Firestore firestore;
 
     @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     public MeetingNoteService(Firestore firestore, UserService userService) {
         this.firestore = firestore;
@@ -41,7 +39,7 @@ public class MeetingNoteService {
         Map<String, Object> data = new HashMap<>();
         data.put("created_by_social_worker", meetingNote.getCreatedByUserUid());
 
-        //Changed to date type as firestore only accepts Date for Timestamp
+        //Changed to date type as Firestore only accepts Date for Timestamp
         Instant instant = meetingNote.getCreatedDateTime().toInstant(ZoneOffset.UTC);
         Date createdDate = Date.from(instant);
 

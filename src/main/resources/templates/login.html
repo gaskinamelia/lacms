@@ -48,20 +48,30 @@
                 </div>
                 <div class="card-body">
                     <form method="post" role="form" th:action="@{/login/submit}" th:object="${loginForm}" class="form-horizontal">
+                        <div th:if="${#fields.hasAnyErrors()}" class="p-3 mb-2 bg-danger text-dark">
+                            <p>There are some errors on this page.</p>
+                            <ul>
+                                <li th:each="err : ${#fields.allErrors()}" th:text="${err}" />
+                            </ul>
+                        </div>
+
                         <div class="form-group mb-3">
                             <label class="control-label"> Email</label>
                             <input type="text" id="email" name="email" class="form-control" placeholder="Enter email address" th:field="*{email}"/>
+                            <p th:errors = "*{email}" class="text-danger" th:if="${#fields.hasErrors('email')}"></p>
                         </div>
 
                         <div class="form-group mb-3">
                             <label class="control-label"> Password</label>
                             <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" th:field="*{hashedPassword}"/>
+                            <p th:errors = "*{hashedPassword}" class="text-danger" th:if="${#fields.hasErrors('hashedPassword')}"></p>
                         </div>
                         <div class="form-group mb-3">
                             <button type="submit" class="btn btn-primary" >Submit</button>
-                            <span> Not registered ?
+                            <span> Not registered?
                                 <a th:href="@{/register}">Register here</a>
                             </span>
+
                         </div>
                     </form>
                 </div>

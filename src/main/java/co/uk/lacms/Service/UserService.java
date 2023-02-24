@@ -19,11 +19,11 @@ import java.util.concurrent.ExecutionException;
 @Service
 public class UserService {
     @Autowired
-    private FirebaseAuthManager firebaseAuthManager;
+    private final FirebaseAuthManager firebaseAuthManager;
     @Autowired
-    private FirebaseAuth firebaseAuth;
+    private final FirebaseAuth firebaseAuth;
     @Autowired
-    private Firestore firestore;
+    private final Firestore firestore;
 
     public String idTokenLoggedInUser;
 
@@ -38,9 +38,8 @@ public class UserService {
      * @param email
      * @param hashedPassword
      * @return token. The idToken for the logged in user.
-     * @throws FirebaseAuthException
      */
-    public String authenticateUser(String email, String hashedPassword) throws FirebaseAuthException {
+    public String authenticateUser(String email, String hashedPassword) throws FirebaseAuthException{
         return firebaseAuthManager.auth(email, hashedPassword);
     }
 

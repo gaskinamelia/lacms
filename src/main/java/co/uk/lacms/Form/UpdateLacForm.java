@@ -1,11 +1,12 @@
 package co.uk.lacms.Form;
 
-import co.uk.lacms.Entity.User;
+import javax.validation.constraints.NotNull;
 
 public class UpdateLacForm {
 
     private String lacUid;
 
+    @NotNull(message = "Please select a social worker.")
     private String swUid;
 
     public String getLacUid() {

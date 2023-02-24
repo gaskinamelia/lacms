@@ -36,7 +36,10 @@
     </div>
     <div class="row">
         <div class="col-md-8 justify-content-md-center">
-            <div th:else th:each="comment : ${comments}">
+            <div th:if="${commentPage.totalPages == 0}">
+                <p>Link to add comment</p>
+            </div>
+            <div th:each="comment : ${commentPage.content}">
                 <div class="card">
                     <div class="card-body">
                         <p class="card-text">Added by: [[${comment.getCreatedUserName()}]]</p>
@@ -47,6 +50,16 @@
                 <br>
             </div>
         </div>
+    </div>
+
+    <div class="row">
+        <nav aria-label="Pagination" th:if="${commentPage.totalPages > 0}">
+            <ul class="pagination justify-content-center">
+                <li th:each="pageNumber : ${pageNumbers}" th:class="${pageNumber==commentPage.number + 1} ? 'page-item active' : 'page-item'">
+                    <a th:href="@{/viewAllComments/{meetingNoteId}(meetingNoteId=${meetingNote.getId()}, size=${commentPage.size}, page=${pageNumber})}" th:text="${pageNumber} " class="page-link"></a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </div>
 </body>

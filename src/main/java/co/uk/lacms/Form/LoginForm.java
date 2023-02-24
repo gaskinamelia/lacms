@@ -1,7 +1,12 @@
 package co.uk.lacms.Form;
 
+import javax.validation.constraints.NotEmpty;
+
 public class LoginForm {
+
+    @NotEmpty(message = "Please insert your email address.")
     private String email;
+    @NotEmpty(message = "Please insert your password.")
     private String hashedPassword;
 
     public String getEmail() {

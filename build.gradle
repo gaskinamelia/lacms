@@ -18,6 +18,8 @@ dependencies {
 //	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.data:spring-data-commons'
 	implementation platform('com.google.firebase:firebase-bom:29.3.0')
 	implementation 'com.google.firebase:firebase-analytics-ktx'
 	implementation 'com.google.firebase:firebase-firestore'

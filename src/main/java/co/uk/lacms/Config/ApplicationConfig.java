@@ -31,6 +31,7 @@ public class ApplicationConfig {
     public String getAuthFileLocation() {
         return authFileLocation;
     }
+
     @Bean
     public FirebaseApp createFirebaseApp() throws IOException {
         FileInputStream serviceAccount =

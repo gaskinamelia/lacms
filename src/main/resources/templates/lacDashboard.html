@@ -59,7 +59,9 @@
       </div>
     </div>
   </div>
+
   <br /><br />
+
   <div class="row">
     <div class="col-md-8 justify-content-md-center">
       <div class="card">
@@ -67,10 +69,10 @@
           <h2 class="text-center">Meeting notes</h2>
         </div>
         <div class="card-body">
-          <div th:if="${meetingNotes.size() == 0}">
+          <div th:if="${meetingNotePage.getTotalPages() == 0}">
             <p class="card-text">There are no meeting notes recorded.</p>
           </div>
-          <div th:else th:each="mn : ${meetingNotes}">
+          <div th:else th:each="mn : ${meetingNotePage.content}">
             <div class="card">
               <div class="card-header">
                 <h2 class="text-left">[[${mn.getTitle()}]]</h2>
@@ -89,7 +91,16 @@
       </div>
     </div>
   </div>
-  <br /><br />
+
+  <div class="row">
+    <nav aria-label="Pagination" th:if="${meetingNotePage.totalPages > 0}">
+      <ul class="pagination justify-content-center">
+        <li th:each="pageNumber : ${pageNumbers}" th:class="${pageNumber==meetingNotePage.number + 1} ? 'page-item active' : 'page-item'">
+          <a th:href="@{/lac/dashboard(size=${meetingNotePage.size}, page=${pageNumber})}" th:text="${pageNumber} " class="page-link"></a>
+        </li>
+      </ul>
+    </nav>
+  </div>
 </div>
 </body>
 </html>
