@@ -2,20 +2,25 @@ package co.uk.lacms.Entity;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.text.SimpleDateFormat;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.Locale;
 
 public class MeetingNote {
 
     private String id;
     private String createdByUserUid;
     private String createdForUserUid;
+    @NotEmpty(message = "Please enter a title for the meeting note.")
     private String title;
+
+    @NotEmpty(message = "Please enter the meeting notes.")
+    @Size(min = 10, message = "Please enter more meeting notes.")
     private String notes;
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @NotNull(message = "Please enter the date and time the meeting took place.")
     private LocalDateTime createdDateTime;
     private String updatedByUserUid;
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")

@@ -4,7 +4,6 @@ import co.uk.lacms.Entity.User;
 import co.uk.lacms.Entity.UserType;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
-import com.google.firebase.auth.FirebaseAuth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +13,7 @@ import java.util.concurrent.ExecutionException;
 @Service
 public class SocialWorkerManagerDashboardService {
     @Autowired
-    private Firestore firestore;
+    private final Firestore firestore;
 
     public SocialWorkerManagerDashboardService(Firestore firestore) {
         this.firestore = firestore;

@@ -9,21 +9,26 @@ import com.google.cloud.firestore.Firestore;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
+import org.apache.http.HttpException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
     @Autowired
-    private FirebaseAuthManager firebaseAuthManager;
+    private final FirebaseAuthManager firebaseAuthManager;
     @Autowired
-    private FirebaseAuth firebaseAuth;
+    private final FirebaseAuth firebaseAuth;
     @Autowired
-    private Firestore firestore;
+    private final Firestore firestore;
 
     public String idTokenLoggedInUser;
 
@@ -38,9 +43,8 @@ public class UserService {
      * @param email
      * @param hashedPassword
      * @return token. The idToken for the logged in user.
-     * @throws FirebaseAuthException
      */
-    public String authenticateUser(String email, String hashedPassword) throws FirebaseAuthException {
+    public String authenticateUser(String email, String hashedPassword) throws FirebaseAuthException{
         return firebaseAuthManager.auth(email, hashedPassword);
     }
 
@@ -63,6 +67,8 @@ public class UserService {
     public String signUpUser(User user) throws FirebaseAuthException {
 
         String token = firebaseAuthManager.signUpWithEmailPassword(user.getEmail(), user.getPassword());
+
+        String userUid = getUidForUserByToken(token);
 
         DocumentReference docRef = firestore.collection("Users").document(getUidForUserByToken(token));
         Map<String, Object> data = new HashMap<>();
@@ -164,6 +170,19 @@ public class UserService {
         }
 
         return user;
+    }
+
+    /**
+     * Check if user has the authority to access
+     * @param user The user to authorise
+     * @param userTypeAllowed The userType that is authorised
+     */
+    public void authoriseUser(User user, List<UserType> userTypeAllowed) {
+        boolean notAuthorised = userTypeAllowed.stream().anyMatch(userType -> !user.getUserType().equals(userType));
+
+        if(notAuthorised) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
     }
 
 }

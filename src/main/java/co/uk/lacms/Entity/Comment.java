@@ -1,5 +1,7 @@
 package co.uk.lacms.Entity;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -7,6 +9,7 @@ public class Comment {
 
     private String commentId;
 
+    @NotEmpty(message = "Please enter comments")
     private String comments;
 
     private String createdByUserUid;

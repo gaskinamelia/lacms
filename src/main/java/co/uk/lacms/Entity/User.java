@@ -1,11 +1,23 @@
 package co.uk.lacms.Entity;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 public class User {
     private String uid;
+
+    @NotEmpty(message = "User's email cannot be empty.")
     private String email;
+    @NotEmpty(message = "User's password cannot be empty.")
     private String password;
+
+    @NotEmpty(message = "User's first name cannot be empty.")
     private String firstName;
+
+    @NotEmpty(message = "User's last name cannot be empty.")
     private String lastName;
+
+    @NotNull(message = "Please select a user type.")
     private UserType userType;
     private String token;
 

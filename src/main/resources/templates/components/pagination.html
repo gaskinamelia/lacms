@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="components/headerNav :: common_head"></head>
+<body>
+<div class="row" th:fragment="pagination (page, pageNumbers, link)">
+    <nav aria-label="Pagination" th:if="${page.totalPages > 0}">
+        <ul class="pagination justify-content-center">
+            <li th:each="pageNumber : ${pageNumbers}" th:class="${pageNumber==page.number + 1} ? 'page-item active' : 'page-item'">
+                <a th:href="${link}" th:text="${pageNumber} " class="page-link"></a>
+            </li>
+        </ul>
+    </nav>
+</div>
+</body>
+</html>
