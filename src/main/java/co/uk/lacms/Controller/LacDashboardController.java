@@ -2,6 +2,7 @@ package co.uk.lacms.Controller;
 
 import co.uk.lacms.Entity.MeetingNote;
 import co.uk.lacms.Entity.User;
+import co.uk.lacms.Entity.UserType;
 import co.uk.lacms.Service.LacDashboardService;
 import co.uk.lacms.Service.MeetingNoteService;
 import co.uk.lacms.Service.PaginationService;
@@ -49,10 +50,13 @@ public class LacDashboardController {
     public ModelAndView lacDashboard(@RequestParam("page") Optional<Integer> page,
                                      @RequestParam("size") Optional<Integer> size,
                                      Model model) {
+
         idTokenLoggedInUser = userService.getLoggedInToken();
 
         if(idTokenLoggedInUser != null) {
             User user = userService.getUserByToken(idTokenLoggedInUser);
+
+            userService.authoriseUser(user, List.of(UserType.LAC));
 
             User socialWorkerUser = lacDashboardService.getSocialWorkerForLoggedInLAC(user);
 

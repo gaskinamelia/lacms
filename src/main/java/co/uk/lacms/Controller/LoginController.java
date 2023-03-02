@@ -28,6 +28,25 @@ public class LoginController {
         this.firebaseAuthManager = firebaseAuthManager;
     }
 
+    @GetMapping("/")
+    public ModelAndView index(Model model) {
+        if(userService.getLoggedInToken() == null || userService.getLoggedInToken().isEmpty()) {
+            return new ModelAndView("redirect:/login");
+        } else {
+            UserType loggedInUserType = userService.getUserTypeByToken(userService.getLoggedInToken());
+
+            if(loggedInUserType.equals(UserType.SW)) {
+                return new ModelAndView("redirect:/sw/dashboard");
+            } else if (loggedInUserType.equals(UserType.SW_MANAGER)) {
+                return new ModelAndView("redirect:/swm/dashboard");
+            } else if (loggedInUserType.equals(UserType.LAC)) {
+                return new ModelAndView("redirect:/lac/dashboard");
+            } else {
+                return new ModelAndView("redirect:/dashboard");
+            }
+        }
+    }
+
     @GetMapping("/login")
     public ModelAndView loginForm(Model model) {
         model.addAttribute("loginForm", new LoginForm());

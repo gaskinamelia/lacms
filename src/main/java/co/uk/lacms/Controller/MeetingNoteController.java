@@ -50,6 +50,8 @@ public class MeetingNoteController {
         idTokenLoggedInUser = userService.getLoggedInToken();
 
         User user = userService.getUserByToken(idTokenLoggedInUser);
+        userService.authoriseUser(user, List.of(UserType.SW));
+
         User lacUser = userService.getUserByUid(lacUid);
 
         model.addAttribute("meetingNote", new MeetingNote());
@@ -67,6 +69,8 @@ public class MeetingNoteController {
         if(result.hasErrors()){
 
             User user = userService.getUserByToken(userService.getLoggedInToken());
+            userService.authoriseUser(user, List.of(UserType.SW));
+
             User lacUser = userService.getUserByUid(meetingNote.getCreatedForUserUid());
 
             model.addAttribute("meetingNote", meetingNote);
@@ -89,6 +93,8 @@ public class MeetingNoteController {
         idTokenLoggedInUser = userService.getLoggedInToken();
 
         User user = userService.getUserByToken(idTokenLoggedInUser);
+        userService.authoriseUser(user, List.of(UserType.SW, UserType.LAC));
+
         User lacUser = userService.getUserByUid(lacUid);
 
         ArrayList<MeetingNote> meetingNotes = meetingNoteService.getAllMeetingNotesForUser(lacUid, user.getUid());
@@ -121,6 +127,8 @@ public class MeetingNoteController {
         idTokenLoggedInUser = userService.getLoggedInToken();
 
         User user = userService.getUserByToken(idTokenLoggedInUser);
+        userService.authoriseUser(user, List.of(UserType.SW, UserType.LAC));
+
         User lacUser = userService.getUserByUid(lacUid);
 
         MeetingNote meetingNote = meetingNoteService.getMeetingNoteForId(meetingNoteId);
@@ -167,6 +175,8 @@ public class MeetingNoteController {
         idTokenLoggedInUser = userService.getLoggedInToken();
 
         User user = userService.getUserByToken(idTokenLoggedInUser);
+        userService.authoriseUser(user, List.of(UserType.SW));
+
         User lacUser = userService.getUserByUid(lacUid);
 
         MeetingNote meetingNote = meetingNoteService.getMeetingNoteForId(meetingNoteId);
@@ -188,6 +198,8 @@ public class MeetingNoteController {
             idTokenLoggedInUser = userService.getLoggedInToken();
 
             User user = userService.getUserByToken(idTokenLoggedInUser);
+            userService.authoriseUser(user, List.of(UserType.SW));
+
             User lacUser = userService.getUserByUid(meetingNote.getCreatedForUserUid());
 
             model.addAttribute("meetingNote", meetingNote);
@@ -214,6 +226,8 @@ public class MeetingNoteController {
             idTokenLoggedInUser = userService.getLoggedInToken();
 
             User user = userService.getUserByToken(idTokenLoggedInUser);
+            userService.authoriseUser(user, List.of(UserType.SW, UserType.LAC));
+
             User lacUser = userService.getUserByUid(lacUid);
 
             MeetingNote meetingNote = meetingNoteService.getMeetingNoteForId(meetingNoteId);
@@ -267,6 +281,7 @@ public class MeetingNoteController {
         idTokenLoggedInUser = userService.getLoggedInToken();
 
         User user = userService.getUserByToken(idTokenLoggedInUser);
+        userService.authoriseUser(user, List.of(UserType.SW, UserType.LAC));
 
         MeetingNote meetingNote = meetingNoteService.getMeetingNoteForId(meetingNoteId);
 

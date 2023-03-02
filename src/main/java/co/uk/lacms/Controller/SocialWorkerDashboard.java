@@ -1,6 +1,7 @@
 package co.uk.lacms.Controller;
 
 import co.uk.lacms.Entity.User;
+import co.uk.lacms.Entity.UserType;
 import co.uk.lacms.Service.PaginationService;
 import co.uk.lacms.Service.SocialWorkerDashboardService;
 import co.uk.lacms.Service.UserService;
@@ -48,6 +49,7 @@ public class SocialWorkerDashboard {
 
         if(idTokenLoggedInUser != null) {
             User user = userService.getUserByToken(idTokenLoggedInUser);
+            userService.authoriseUser(user, List.of(UserType.SW));
 
             ArrayList<User> lacs = socialWorkerDashboardService.getAllLacForLoggedInSocialWorker(user);
 
