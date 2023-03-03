@@ -63,7 +63,7 @@ public class LacDashboardController {
             ArrayList<MeetingNote> meetingNotes = meetingNoteService.getAllMeetingNotesForUser(user.getUid(), socialWorkerUser.getUid());
 
             int currentPage = page.orElse(1);
-            int pageSize = size.orElse(2); //TODO: change later to 10
+            int pageSize = size.orElse(10);
 
             Page<MeetingNote> meetingNotePage = paginationService.paginateMeetingNotes(meetingNotes, PageRequest.of(currentPage - 1, pageSize));
 
@@ -83,4 +83,6 @@ public class LacDashboardController {
         }
         return new ModelAndView("redirect:/login");
     }
+
+    //post mapping search/filter
 }

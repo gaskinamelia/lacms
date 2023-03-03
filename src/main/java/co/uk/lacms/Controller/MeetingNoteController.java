@@ -100,7 +100,7 @@ public class MeetingNoteController {
         ArrayList<MeetingNote> meetingNotes = meetingNoteService.getAllMeetingNotesForUser(lacUid, user.getUid());
 
         int currentPage = page.orElse(1);
-        int pageSize = size.orElse(2); //TODO: change later to 10
+        int pageSize = size.orElse(10);
 
         Page<MeetingNote> meetingNotePage = paginationService.paginateMeetingNotes(meetingNotes, PageRequest.of(currentPage - 1, pageSize));
 
@@ -288,7 +288,7 @@ public class MeetingNoteController {
         ArrayList<Comment> comments = meetingNoteService.getAllCommentsForMeetingNote(meetingNoteId);
 
         int currentPage = page.orElse(1);
-        int pageSize = size.orElse(2); //TODO: change later to 10
+        int pageSize = size.orElse(10);
 
         Page<Comment> commentPage = paginationService.paginationComments(comments, PageRequest.of(currentPage - 1, pageSize));
 

@@ -2,6 +2,7 @@ package co.uk.lacms.Controller;
 
 import co.uk.lacms.Entity.User;
 import co.uk.lacms.Entity.UserType;
+import co.uk.lacms.Form.FilterManagerDashboardForm;
 import co.uk.lacms.Form.UpdateLacForm;
 import co.uk.lacms.Service.PaginationService;
 import co.uk.lacms.Service.SocialWorkerManagerDashboardService;
@@ -56,11 +57,16 @@ public class SocialWorkerManagerDashboardController {
             userService.authoriseUser(user, List.of(UserType.SW_MANAGER));
 
             ArrayList<User> lacsWithoutSW = socialWorkerManagerDashboardService.getAllLACWithUnassignedSocialWorker();
+//            ArrayList<User> lacsWithSW = socialWorkerManagerDashboardService.getAllLACWithAssignedSocialWorker();
+//
+//            ArrayList<User> lacs = new ArrayList<>();
+//            lacs.addAll(lacsWithSW);
+//            lacs.addAll(lacsWithoutSW);
 
             ArrayList<User> socialWorkerUsers = socialWorkerManagerDashboardService.getAllSocialWorkerUsersForManagerUser(user.getUid());
 
             int currentPage = page.orElse(1);
-            int pageSize = size.orElse(2); //TODO: change later to 10
+            int pageSize = size.orElse(10);
 
             Page<User> lacPage = paginationService.paginateUsers(lacsWithoutSW, PageRequest.of(currentPage - 1, pageSize));
 
@@ -75,6 +81,9 @@ public class SocialWorkerManagerDashboardController {
             }
 
             model.addAttribute("user", user);
+//            model.addAttribute("filterManagerDashboardForm", new FilterManagerDashboardForm(true, true));
+            model.addAttribute("lacsWithoutSW", lacsWithoutSW);
+//            model.addAttribute("lacsWithSW", lacsWithSW);
             model.addAttribute("updateLacForm", new UpdateLacForm());
             model.addAttribute("socialWorkerUsers", socialWorkerUsers);
 
@@ -108,4 +117,30 @@ public class SocialWorkerManagerDashboardController {
 
         return new ModelAndView("redirect:/swm/dashboard");
     }
+
+//    @PostMapping("swm/filter")
+//    public ModelAndView filterDashboard(@ModelAttribute("filterManagerDashboard") FilterManagerDashboardForm filterManagerDashboardForm,
+//                                      Model model) {
+//
+//        User user = userService.getUserByToken(idTokenLoggedInUser);
+//        userService.authoriseUser(user, List.of(UserType.SW_MANAGER));
+//
+//        if(filterManagerDashboardForm.isUnassignedLacs() && filterManagerDashboardForm.isAssignedLacs()) {
+//            model.addAttribute("lacsWithoutSW", socialWorkerManagerDashboardService.getAllLACWithUnassignedSocialWorker());
+//            model.addAttribute("lacsWithSW", socialWorkerManagerDashboardService.getAllLACWithAssignedSocialWorker());
+//        } else if(filterManagerDashboardForm.isAssignedLacs()) {
+//            model.addAttribute("lacsWithSW", socialWorkerManagerDashboardService.getAllLACWithAssignedSocialWorker());
+//        } else if(filterManagerDashboardForm.isUnassignedLacs()) {
+//            model.addAttribute("lacsWithoutSW", socialWorkerManagerDashboardService.getAllLACWithUnassignedSocialWorker());
+//        } else {
+//            model.addAttribute("noFilterAdded");
+//        }
+//
+//        ArrayList<User> socialWorkerUsers = socialWorkerManagerDashboardService.getAllSocialWorkerUsersForManagerUser(user.getUid());
+//
+//        model.addAttribute("user", user);
+//        model.addAttribute("socialWorkerUsers", socialWorkerUsers);
+//
+//        return new ModelAndView("/swm/dashboard");
+//    }
 }

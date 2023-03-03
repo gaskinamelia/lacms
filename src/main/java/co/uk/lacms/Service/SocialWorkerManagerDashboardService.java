@@ -49,6 +49,36 @@ public class SocialWorkerManagerDashboardService {
         return result;
     }
 
+//    /**
+//     * Retrieve a list of looked after children that have
+//     * assigned social worker field.
+//     * @return list of user objects returned from query
+//     */
+//    public ArrayList<User> getAllLACWithAssignedSocialWorker() {
+//
+//        ArrayList<User> result = new ArrayList<>();
+//
+//        CollectionReference users = firestore.collection("Users");
+//
+//        Query query = users
+//                .whereEqualTo("userType", UserType.LAC.getDisplayName())
+//                .whereNotEqualTo("social_worker_uid", null);
+//
+//        ApiFuture<QuerySnapshot> querySnapshot = query.get();
+//
+//        try {
+//            for(DocumentSnapshot document : querySnapshot.get().getDocuments()) {
+//                User user = new User(document.getId(), document.get("email").toString(), document.get("firstName").toString(), document.get("lastName").toString(), UserType.fromDisplayName(document.get("userType").toString()), document.get("token").toString());
+//
+//                result.add(user);
+//            }
+//        } catch (InterruptedException | ExecutionException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//        return result;
+//    }
+
     /**
      * Return a list of all social worker users from the user collection
      * @param loggedInUserUid Current logged in user uid

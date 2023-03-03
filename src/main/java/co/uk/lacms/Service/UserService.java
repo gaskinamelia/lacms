@@ -178,7 +178,7 @@ public class UserService {
      * @param userTypeAllowed The userType that is authorised
      */
     public void authoriseUser(User user, List<UserType> userTypeAllowed) {
-        boolean notAuthorised = userTypeAllowed.stream().anyMatch(userType -> !user.getUserType().equals(userType));
+        boolean notAuthorised = userTypeAllowed.stream().noneMatch(userType -> user.getUserType().equals(userType));
 
         if(notAuthorised) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
