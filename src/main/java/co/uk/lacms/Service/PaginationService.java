@@ -1,6 +1,7 @@
 package co.uk.lacms.Service;
 
 import co.uk.lacms.Entity.Comment;
+import co.uk.lacms.Entity.LacUser;
 import co.uk.lacms.Entity.MeetingNote;
 import co.uk.lacms.Entity.User;
 import org.springframework.data.domain.Page;
@@ -31,6 +32,25 @@ public class PaginationService {
         }
 
         Page<User> page = new PageImpl<User>(list, PageRequest.of(currentPage, pageSize), users.size());
+
+        return page;
+    }
+
+    public Page<LacUser> paginateLacUsers(ArrayList<LacUser> users, Pageable pageable) {
+
+        int currentPage = pageable.getPageNumber();
+        int pageSize = pageable.getPageSize();
+        int startItem = currentPage * pageSize;
+        List<LacUser> list;
+
+        if (users.size() < startItem) {
+            list = Collections.emptyList();
+        } else {
+            int toIndex = Math.min(startItem + pageSize, users.size());
+            list = users.subList(startItem, toIndex);
+        }
+
+        Page<LacUser> page = new PageImpl<LacUser>(list, PageRequest.of(currentPage, pageSize), users.size());
 
         return page;
     }

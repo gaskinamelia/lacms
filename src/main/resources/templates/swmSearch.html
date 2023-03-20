@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="components/headerNav :: common_head"></head>
+<body>
+<div th:replace="components/headerNav :: header (authenticated='true', user=${user})"></div>
+<br /><br />
+<div class="container">
+
+    <div class="row">
+        <a th:href="@{/swm/dashboard/unassigned_lacs}" class="link">Back to dashboard</a>
+    </div>
+
+    <div class="row">
+        <h1 class="text-left"> Search results </h1>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 justify-content-md-center">
+            <div class="card">
+                <div class="card-header">
+                        <h2 class="text-left">Search results for "[[${searchQuery}]]"</h2>
+                </div>
+                <div class="card-body">
+                    <div th:if="${lacPage.getTotalPages() == 0}">
+                        <p class="card-text">No profiles match what you are looking for.</p>
+                    </div>
+                    <div th:else th:each="lac : ${lacPage.content}">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="text-left">[[${lac.getFullName()}]]</h2>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">Email address: [[${lac.getEmail()}]]</p>
+                                <form method="post" role="form" th:action="@{/swm/update/lac_user}" th:object="${updateLacForm}" class="form">
+                                        <div th:if="${#fields.hasAnyErrors()}" class="p-3 mb-2 bg-danger text-dark">
+                                            <p>There are some errors on this page.</p>
+                                            <ul>
+                                                <li th:each="err : ${#fields.allErrors()}" th:text="${err}" />
+                                            </ul>
+                                        </div>
+
+                                        <div class="form-group" th:hidden="true">
+                                            <input type="text" id="lacUid" name="lacUid" class="form-control" th:value="${lac.getUid()}"/>
+                                        </div>
+
+                                        <div th:if="${lac.hasSocialWorker()}">
+                                            <p class="card-text">Social Worker assigned: [[${lac.getSocialWorkerUser().getFullName()}]]</p>
+
+                                            <div class="form-group">
+                                                <label class="form-label">Reassign social worker</label>
+                                                <select class="custom-select" id="swUid" name="swUid">
+                                                    <option value="" disabled selected hidden>[[${lac.getSocialWorkerUser().getFullName()}]]</option>
+                                                    <option th:each="socialWorker : ${socialWorkerUsers}" th:value="${socialWorker.getUid()}" th:text="${socialWorker.getFullName()}"></option>
+                                                    <p th:errors = "*{swUid}" class="text-danger" th:if="${#fields.hasErrors('swUid')}"></p>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div th:if="${!lac.hasSocialWorker()}">
+                                            <div class="form-group">
+                                                <label class="form-label">Select social worker</label>
+                                                <select class="custom-select" id="swUid" name="swUid">
+                                                    <option value="" disabled selected hidden>Please Choose...</option>
+                                                    <option th:each="socialWorker : ${socialWorkerUsers}" th:value="${socialWorker.getUid()}" th:text="${socialWorker.getFullName()}"></option>
+                                                    <p th:errors = "*{swUid}" class="text-danger" th:if="${#fields.hasErrors('swUid')}"></p>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <button class="btn btn-primary" type="submit">Assign social worker</button>
+                                        </div>
+                                </form>
+                            </div>
+                        </div>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav aria-label="Pagination" th:if="${lacPage.totalPages > 0}">
+            <ul class="pagination justify-content-center">
+                <li th:each="pageNumber : ${pageNumbers}" th:class="${pageNumber==lacPage.number + 1} ? 'page-item active' : 'page-item'">
+                    <a th:href="@{${dashboardLink}(size=${lacPage.size}, page=${pageNumber})}" th:text="${pageNumber} " class="page-link"></a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+</body>
+</html>

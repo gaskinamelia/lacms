@@ -9,4 +9,6 @@ public class ProfileController {
     public String profile() {
         return "index";
     }
+
+    //TODO: view profile details
 }

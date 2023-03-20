@@ -142,7 +142,7 @@ public class MeetingNoteService {
         return meetingNote;
     }
 
-    private LocalDateTime convertStringDateToLocalDateTime(String date) throws ParseException {
+    public LocalDateTime convertStringDateToLocalDateTime(String date) throws ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm", Locale.ENGLISH);
 
         Date createdDate = formatter.parse(date);
