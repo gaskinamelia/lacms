@@ -38,7 +38,7 @@ public class LoginController {
             if(loggedInUserType.equals(UserType.SW)) {
                 return new ModelAndView("redirect:/sw/dashboard");
             } else if (loggedInUserType.equals(UserType.SW_MANAGER)) {
-                return new ModelAndView("redirect:/swm/dashboard");
+                return new ModelAndView("redirect:/swm/dashboard/unassigned_lacs");
             } else if (loggedInUserType.equals(UserType.LAC)) {
                 return new ModelAndView("redirect:/lac/dashboard");
             } else {
@@ -80,7 +80,7 @@ public class LoginController {
         if(loggedInUserType.equals(UserType.SW)) {
             return new ModelAndView("redirect:/sw/dashboard?success");
         } else if (loggedInUserType.equals(UserType.SW_MANAGER)) {
-            return new ModelAndView("redirect:/swm/dashboard?success");
+            return new ModelAndView("redirect:/swm/dashboard/unassigned_lacs?success");
         } else if (loggedInUserType.equals(UserType.LAC)) {
             return new ModelAndView("redirect:/lac/dashboard?success");
         } else {

@@ -1,13 +1,15 @@
 package co.uk.lacms.Service;
 
+import co.uk.lacms.Entity.LacUser;
 import co.uk.lacms.Entity.User;
 import co.uk.lacms.Entity.UserType;
+import co.uk.lacms.Form.FilterManagerDashboardForm;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 @Service
@@ -15,30 +17,43 @@ public class SocialWorkerManagerDashboardService {
     @Autowired
     private final Firestore firestore;
 
-    public SocialWorkerManagerDashboardService(Firestore firestore) {
+    @Autowired
+    private final UserService userService;
+
+    public SocialWorkerManagerDashboardService(Firestore firestore, UserService userService) {
         this.firestore = firestore;
+        this.userService = userService;
     }
 
     /**
-     * Retrieve a list of looked after children that have
-     * unassigned social worker field.
+     * Retrieve a list of looked after children users based
+     * on the filter form for dashboard
      * @return list of user objects returned from query
      */
-    public ArrayList<User> getAllLACWithUnassignedSocialWorker() {
+    public ArrayList<LacUser> getFilteredLacUsers(FilterManagerDashboardForm form) {
 
-        ArrayList<User> result = new ArrayList<>();
+        ArrayList<LacUser> result = new ArrayList<>();
 
         CollectionReference users = firestore.collection("Users");
 
         Query query = users
-                .whereEqualTo("userType", UserType.LAC.getDisplayName())
-                .whereEqualTo("social_worker_uid", null);
+                .whereEqualTo("userType", UserType.LAC.getDisplayName());
+
+        if(form.isUnassignedLacs() && !form.isAssignedLacs()) {
+            query = query.whereEqualTo("social_worker_uid", null);
+        } else if(!form.isUnassignedLacs() && form.isAssignedLacs()) {
+            query = query.whereNotEqualTo("social_worker_uid", null);
+        }
 
         ApiFuture<QuerySnapshot> querySnapshot = query.get();
 
         try {
+
             for(DocumentSnapshot document : querySnapshot.get().getDocuments()) {
-                User user = new User(document.getId(), document.get("email").toString(), document.get("firstName").toString(), document.get("lastName").toString(), UserType.fromDisplayName(document.get("userType").toString()), document.get("token").toString());
+
+                Optional<User> socialWorkerUser = userService.getSocialWorkerUserWithLacUid(document.getId());
+
+                LacUser user = new LacUser(document.getId(), document.get("email").toString(), document.get("firstName").toString(), document.get("lastName").toString(), UserType.fromDisplayName(document.get("userType").toString()), document.get("token").toString(), socialWorkerUser.orElse(null));
 
                 result.add(user);
             }
@@ -48,36 +63,6 @@ public class SocialWorkerManagerDashboardService {
 
         return result;
     }
-
-//    /**
-//     * Retrieve a list of looked after children that have
-//     * assigned social worker field.
-//     * @return list of user objects returned from query
-//     */
-//    public ArrayList<User> getAllLACWithAssignedSocialWorker() {
-//
-//        ArrayList<User> result = new ArrayList<>();
-//
-//        CollectionReference users = firestore.collection("Users");
-//
-//        Query query = users
-//                .whereEqualTo("userType", UserType.LAC.getDisplayName())
-//                .whereNotEqualTo("social_worker_uid", null);
-//
-//        ApiFuture<QuerySnapshot> querySnapshot = query.get();
-//
-//        try {
-//            for(DocumentSnapshot document : querySnapshot.get().getDocuments()) {
-//                User user = new User(document.getId(), document.get("email").toString(), document.get("firstName").toString(), document.get("lastName").toString(), UserType.fromDisplayName(document.get("userType").toString()), document.get("token").toString());
-//
-//                result.add(user);
-//            }
-//        } catch (InterruptedException | ExecutionException e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//        return result;
-//    }
 
     /**
      * Return a list of all social worker users from the user collection

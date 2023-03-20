@@ -15,9 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -183,6 +181,66 @@ public class UserService {
         if(notAuthorised) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
+    }
+
+    /**
+     * Get the social worker user for lac user
+     * @param lacUid The lac user uid
+     * @return User the social worker user for the lac user
+     */
+    public Optional<User> getSocialWorkerUserWithLacUid(String lacUid) {
+        Optional<String> social_worker_uid = getSocialWorkerUidForLacUid(lacUid);
+
+        if(social_worker_uid.isEmpty()) {
+            return Optional.empty();
+        }
+
+        DocumentReference docRef = firestore.collection("Users").document(social_worker_uid.get());
+        ApiFuture<DocumentSnapshot> future = docRef.get();
+
+        DocumentSnapshot document = null;
+
+        User result = null;
+        try {
+            document = future.get();
+            String email = document.get("email").toString();
+            String firstName = document.get("firstName").toString();
+            String lastName = document.get("lastName").toString();
+            String token = document.get("token").toString();
+            UserType userType = UserType.fromDisplayName(document.get("userType").toString());
+
+            result = new User(social_worker_uid.get(), email, firstName, lastName, userType, token);
+
+        } catch (InterruptedException | ExecutionException e) {
+            return Optional.empty();
+        }
+
+        return Optional.of(result);
+    }
+
+    /**
+     * Get the social worker user uid for lac user
+     * @param lacUid The lac user uid
+     * @return User uid the social worker user for the lac user
+     */
+    private Optional<String> getSocialWorkerUidForLacUid(String lacUid) {
+
+        DocumentReference docRef = firestore.collection("Users").document(lacUid);
+        ApiFuture<DocumentSnapshot> future = docRef.get();
+
+        DocumentSnapshot document = null;
+
+        String result = null;
+        try {
+            document = future.get();
+
+            result = Objects.requireNonNull(document.get("social_worker_uid")).toString();
+
+        } catch (InterruptedException | ExecutionException | NullPointerException e) {
+            return Optional.empty();
+        }
+
+        return Optional.of(result);
     }
 
 }

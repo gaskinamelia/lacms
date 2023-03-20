@@ -12,6 +12,9 @@
                     <h2 class="text-center">Viewing meeting note [[${meetingNote.getTitle()}]] for [[${lacUser.getFullName()}]]</h2>
                 </div>
                 <div class="card-body">
+                    <div th:if="${meetingNote.isArchived()}" class="p-3 mb-2 bg-warning text-dark">
+                        <p>This note is archived.</p>
+                    </div>
                     <p>Date: [[${meetingNote.getDisplayCreatedDate()}]]</p>
                     <h6>Notes</h6>
                     <p>[[${meetingNote.getNotes()}]]</p>
@@ -38,7 +41,7 @@
                         </form>
                     </div>
                     <div th:if="${isLacUser == false}" class="btn-group" role="group">
-                    <button id="addCommentBtn" class="btn btn-secondary" onclick="openCommentForm()">Add comment</button>
+                        <button id="addCommentBtn" class="btn btn-secondary" onclick="openCommentForm()">Add comment</button>
                     </div>
                     <span> View all comments <a th:href="@{'/viewAllComments/' + ${meetingNote.getId()}}">here</a></span>
                     <script>

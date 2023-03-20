@@ -4,8 +4,10 @@ import co.uk.lacms.Entity.Comment;
 import co.uk.lacms.Entity.MeetingNote;
 import co.uk.lacms.Entity.User;
 import co.uk.lacms.Entity.UserType;
+import co.uk.lacms.Form.SearchForm;
 import co.uk.lacms.Service.MeetingNoteService;
 import co.uk.lacms.Service.PaginationService;
+import co.uk.lacms.Service.SearchService;
 import co.uk.lacms.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,12 +38,16 @@ public class MeetingNoteController {
     @Autowired
     PaginationService paginationService;
 
+    @Autowired
+    SearchService searchService;
+
     private String idTokenLoggedInUser;
 
-    public MeetingNoteController(UserService userService, MeetingNoteService meetingNoteService, PaginationService paginationService) {
+    public MeetingNoteController(UserService userService, MeetingNoteService meetingNoteService, PaginationService paginationService, SearchService searchService) {
         this.userService = userService;
         this.meetingNoteService = meetingNoteService;
         this.paginationService = paginationService;
+        this.searchService = searchService;
     }
 
     @GetMapping("/addMeetingNote/{lacUid}")
@@ -89,6 +95,8 @@ public class MeetingNoteController {
     public ModelAndView viewAllMeetingNotes(@RequestParam("page") Optional<Integer> page,
                                             @RequestParam("size") Optional<Integer> size,
                                             @PathVariable("lacUid") String lacUid,
+                                            @RequestParam("searchQuery") Optional<String> searchQuery,
+                                            @RequestParam("archived") Optional<Boolean> viewArchived,
                                             Model model) {
         idTokenLoggedInUser = userService.getLoggedInToken();
 
@@ -97,7 +105,15 @@ public class MeetingNoteController {
 
         User lacUser = userService.getUserByUid(lacUid);
 
-        ArrayList<MeetingNote> meetingNotes = meetingNoteService.getAllMeetingNotesForUser(lacUid, user.getUid());
+        ArrayList<MeetingNote> meetingNotes = null;
+
+        if(searchQuery.isPresent() && viewArchived.isPresent()) {
+            meetingNotes = searchService.searchMeetingNotes(lacUid, user.getUid(), searchQuery.get(), viewArchived.get());
+            model.addAttribute("searched", true);
+        } else {
+           meetingNotes = meetingNoteService.getAllMeetingNotesForUser(lacUid, user.getUid());
+           model.addAttribute("searched", false);
+        }
 
         int currentPage = page.orElse(1);
         int pageSize = size.orElse(10);
@@ -307,5 +323,11 @@ public class MeetingNoteController {
         return new ModelAndView("viewAllComments");
     }
 
+    @PostMapping("/meetingNote/search")
+    public ModelAndView searchDashboard(@ModelAttribute("searchForm") SearchForm searchForm,
+                                        Model model) {
+
+        return new ModelAndView("redirect:/viewMeetingNotes/" + searchForm.getLacUid() + "?searchQuery=" + searchForm.getSearchQuery() + "&archived=" + searchForm.isViewArchived());
+    }
 
 }

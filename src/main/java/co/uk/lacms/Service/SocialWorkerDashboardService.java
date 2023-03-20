@@ -1,5 +1,6 @@
 package co.uk.lacms.Service;
 
+import co.uk.lacms.Entity.LacUser;
 import co.uk.lacms.Entity.User;
 import co.uk.lacms.Entity.UserType;
 import com.google.api.core.ApiFuture;
@@ -13,18 +14,15 @@ import java.util.concurrent.ExecutionException;
 
 @Service
 public class SocialWorkerDashboardService {
-
-    @Autowired
-    private final FirebaseAuthManager firebaseAuthManager;
-    @Autowired
-    private final FirebaseAuth firebaseAuth;
     @Autowired
     private final Firestore firestore;
 
-    public SocialWorkerDashboardService(FirebaseAuthManager firebaseAuthManager, FirebaseAuth firebaseAuth, Firestore firestore) {
-        this.firebaseAuthManager = firebaseAuthManager;
-        this.firebaseAuth = firebaseAuth;
+    @Autowired
+    private final UserService userService;
+
+    public SocialWorkerDashboardService(Firestore firestore, UserService userService) {
         this.firestore = firestore;
+        this.userService = userService;
     }
 
     /**
@@ -33,8 +31,8 @@ public class SocialWorkerDashboardService {
      * @param user The user that is currently logged in
      * @return list of user objects assigned to social worker
      */
-    public ArrayList<User> getAllLacForLoggedInSocialWorker(User user) {
-        ArrayList<User> result = new ArrayList<>();
+    public ArrayList<LacUser> getAllLacForLoggedInSocialWorker(User user) {
+        ArrayList<LacUser> result = new ArrayList<>();
 
         CollectionReference users = firestore.collection("Users");
 
@@ -46,7 +44,9 @@ public class SocialWorkerDashboardService {
 
         try {
             for(DocumentSnapshot document : querySnapshot.get().getDocuments()) {
-                User lacUser = new User(document.getId(), document.get("email").toString(), document.get("firstName").toString(), document.get("lastName").toString(), UserType.fromDisplayName(document.get("userType").toString()), document.get("token").toString());
+
+                User socialWorkerUser = userService.getUserByUid(user.getUid());
+                LacUser lacUser = new LacUser(document.getId(), document.get("email").toString(), document.get("firstName").toString(), document.get("lastName").toString(), UserType.fromDisplayName(document.get("userType").toString()), document.get("token").toString(), socialWorkerUser);
 
                 result.add(lacUser);
             }

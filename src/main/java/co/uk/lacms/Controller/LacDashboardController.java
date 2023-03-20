@@ -1,18 +1,20 @@
 package co.uk.lacms.Controller;
 
+import co.uk.lacms.Entity.LacUser;
 import co.uk.lacms.Entity.MeetingNote;
 import co.uk.lacms.Entity.User;
 import co.uk.lacms.Entity.UserType;
-import co.uk.lacms.Service.LacDashboardService;
-import co.uk.lacms.Service.MeetingNoteService;
-import co.uk.lacms.Service.PaginationService;
-import co.uk.lacms.Service.UserService;
+import co.uk.lacms.Form.SearchForm;
+import co.uk.lacms.Form.UpdateLacForm;
+import co.uk.lacms.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -37,18 +39,24 @@ public class LacDashboardController {
     @Autowired
     PaginationService paginationService;
 
+    @Autowired
+    SearchService searchService;
+
     private String idTokenLoggedInUser;
 
-    public LacDashboardController(UserService userService, LacDashboardService lacDashboardService, MeetingNoteService meetingNoteService, PaginationService paginationService) {
+    public LacDashboardController(UserService userService, LacDashboardService lacDashboardService, MeetingNoteService meetingNoteService, PaginationService paginationService, SearchService searchService) {
         this.userService = userService;
         this.lacDashboardService = lacDashboardService;
         this.meetingNoteService = meetingNoteService;
         this.paginationService = paginationService;
+        this.searchService = searchService;
     }
 
     @GetMapping("/lac/dashboard")
     public ModelAndView lacDashboard(@RequestParam("page") Optional<Integer> page,
                                      @RequestParam("size") Optional<Integer> size,
+                                     @RequestParam("searchQuery") Optional<String> searchQuery,
+                                     @RequestParam("archived") Optional<Boolean> viewArchived,
                                      Model model) {
 
         idTokenLoggedInUser = userService.getLoggedInToken();
@@ -60,7 +68,15 @@ public class LacDashboardController {
 
             User socialWorkerUser = lacDashboardService.getSocialWorkerForLoggedInLAC(user);
 
-            ArrayList<MeetingNote> meetingNotes = meetingNoteService.getAllMeetingNotesForUser(user.getUid(), socialWorkerUser.getUid());
+            ArrayList<MeetingNote> meetingNotes = null;
+
+            if(searchQuery.isPresent() && viewArchived.isPresent()) {
+                meetingNotes = searchService.searchMeetingNotes(user.getUid(), socialWorkerUser.getUid(), searchQuery.get(), viewArchived.get());
+                model.addAttribute("searched", true);
+            } else {
+                meetingNotes = meetingNoteService.getAllMeetingNotesForUser(user.getUid(), socialWorkerUser.getUid());
+                model.addAttribute("searched", false);
+            }
 
             int currentPage = page.orElse(1);
             int pageSize = size.orElse(10);
@@ -78,11 +94,17 @@ public class LacDashboardController {
             model.addAttribute("user", user);
             model.addAttribute("socialWorkerUser", socialWorkerUser);
             model.addAttribute("meetingNotePage", meetingNotePage);
+            model.addAttribute("searchQuery", searchQuery.orElse(""));
 
             return new ModelAndView("lacDashboard");
         }
         return new ModelAndView("redirect:/login");
     }
 
-    //post mapping search/filter
+    @PostMapping("/lac/search")
+    public ModelAndView searchDashboard(@ModelAttribute("searchForm") SearchForm searchForm,
+                                        Model model) {
+
+        return new ModelAndView("redirect:/lac/dashboard?searchQuery=" + searchForm.getSearchQuery() + "&archived=" + searchForm.isViewArchived());
+    }
 }

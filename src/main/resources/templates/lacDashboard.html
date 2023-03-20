@@ -5,12 +5,30 @@
 <div th:replace="components/headerNav :: header (authenticated='true', user=${user})"></div>
 <br /><br />
 <div class="container">
-  <div th:if="${param.success}">
-    <p>Welcome, [[${user.getFullName()}]].</p>
+
+  <div class="row" th:if="${searched}">
+    <a th:href="@{/lac/dashboard}" class="link">Back</a>
   </div>
 
   <div class="row">
-    <h1 class="text-left"> Dashboard </h1>
+    <div class="col-md-8">
+      <h1 class="text-left">Dashboard</h1>
+    </div>
+    <div class="col-md-4 justify-content-md-end">
+      <form method="post" role="form" th:action="@{/lac/search}" th:object="${searchForm}" class="form">
+        <div class="form-check">
+          <input  id="viewArchived" name="viewArchived" class="form-check-input" type="checkbox">
+          <label class="form-check-label" for="viewArchived">
+            Include archived notes?
+          </label>
+        </div>
+
+        <div class="form-group input-group mb-3">
+          <input type="text" id="searchQuery" name="searchQuery" class="form-control" placeholder="Search for meeting note/s"/>
+          <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <div class="row">
@@ -38,12 +56,18 @@
   <div class="row">
     <div class="col-md-8 justify-content-md-center">
       <div class="card">
-        <div class="card-header">
+        <div class="card-header" th:if="${!searched}">
           <h2 class="text-center">Meeting notes</h2>
         </div>
+        <div class="card-header" th:if="${searched}">
+          <h2 class="text-center">Search results for "[[${searchQuery}]]"</h2>
+        </div>
         <div class="card-body">
-          <div th:if="${meetingNotePage.getTotalPages() == 0}">
+          <div th:if="${meetingNotePage.getTotalPages() == 0 && !searched}">
             <p class="card-text">There are no meeting notes recorded.</p>
+          </div>
+          <div th:if="${meetingNotePage.getTotalPages() == 0 && searched}">
+            <p class="card-text">There are no meeting notes found.</p>
           </div>
           <div th:else th:each="mn : ${meetingNotePage.content}">
             <div class="card">
@@ -51,6 +75,9 @@
                 <h2 class="text-left">[[${mn.getTitle()}]]</h2>
               </div>
               <div class="card-body">
+                <div th:if="${mn.isArchived}" class="p-3 mb-2 bg-warning text-dark">
+                  <p>This note is archived.</p>
+                </div>
                 <p class="card-text">[[${mn.getDisplayCreatedDate()}]]</p>
                 <p class="card-text">[[${#strings.abbreviate(mn.getNotes(),100)}]]</p>
                 <div class="form-group">
