@@ -100,6 +100,7 @@ public class SearchService {
         Query query = meetingNotes
                 .whereEqualTo("created_by_social_worker", socialWorkerUid)
                 .whereEqualTo("lac_user", lacUid)
+                .whereEqualTo("deleted", false)
                 .whereIn("archived", !viewArchived ? Collections.singletonList(false) : List.of(false, true))
                 .orderBy("title", Query.Direction.ASCENDING)
                 .whereGreaterThanOrEqualTo("title", queryString)

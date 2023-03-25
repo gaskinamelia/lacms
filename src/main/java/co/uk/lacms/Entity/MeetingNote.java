@@ -27,7 +27,8 @@ public class MeetingNote {
     private LocalDateTime updatedDateTime;
     private boolean archived;
 
-    public MeetingNote() {}
+    public MeetingNote() {
+    }
 
     public MeetingNote(String id, String createdByUserUid, String createdForUserUid, String title, String notes, LocalDateTime createdDateTime, String updatedByUserUid, LocalDateTime updatedDateTime, boolean archived) {
         this.id = id;
