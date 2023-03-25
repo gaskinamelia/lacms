@@ -1,11 +1,9 @@
 package co.uk.lacms.Controller;
 
-import co.uk.lacms.Entity.LacUser;
 import co.uk.lacms.Entity.MeetingNote;
 import co.uk.lacms.Entity.User;
 import co.uk.lacms.Entity.UserType;
 import co.uk.lacms.Form.SearchForm;
-import co.uk.lacms.Form.UpdateLacForm;
 import co.uk.lacms.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -66,15 +64,15 @@ public class LacDashboardController {
 
             userService.authoriseUser(user, List.of(UserType.LAC));
 
-            User socialWorkerUser = lacDashboardService.getSocialWorkerForLoggedInLAC(user);
+            Optional<User> socialWorkerUser = lacDashboardService.getSocialWorkerForLoggedInLAC(user);
 
             ArrayList<MeetingNote> meetingNotes = null;
 
-            if(searchQuery.isPresent() && viewArchived.isPresent()) {
-                meetingNotes = searchService.searchMeetingNotes(user.getUid(), socialWorkerUser.getUid(), searchQuery.get(), viewArchived.get());
+            if(socialWorkerUser.isPresent() && (searchQuery.isPresent() && viewArchived.isPresent())) {
+                meetingNotes = searchService.searchMeetingNotes(user.getUid(), socialWorkerUser.get().getUid(), searchQuery.get(), viewArchived.get());
                 model.addAttribute("searched", true);
             } else {
-                meetingNotes = meetingNoteService.getAllMeetingNotesForUser(user.getUid(), socialWorkerUser.getUid());
+                meetingNotes = meetingNoteService.getAllMeetingNotesForUser(user.getUid(), socialWorkerUser.orElse(null));
                 model.addAttribute("searched", false);
             }
 
@@ -92,7 +90,7 @@ public class LacDashboardController {
             }
 
             model.addAttribute("user", user);
-            model.addAttribute("socialWorkerUser", socialWorkerUser);
+            model.addAttribute("socialWorkerUser", socialWorkerUser.orElse(null));
             model.addAttribute("meetingNotePage", meetingNotePage);
             model.addAttribute("searchQuery", searchQuery.orElse(""));
 

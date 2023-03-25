@@ -111,7 +111,7 @@ public class MeetingNoteController {
             meetingNotes = searchService.searchMeetingNotes(lacUid, user.getUid(), searchQuery.get(), viewArchived.get());
             model.addAttribute("searched", true);
         } else {
-           meetingNotes = meetingNoteService.getAllMeetingNotesForUser(lacUid, user.getUid());
+           meetingNotes = meetingNoteService.getAllMeetingNotesForUser(lacUid, user);
            model.addAttribute("searched", false);
         }
 

@@ -17,6 +17,12 @@ import java.util.List;
 @Service
 public class PaginationService {
 
+    /**
+     * Paginate list of users
+     * @param users The users to paginate
+     * @param pageable The page request with current page and page size.
+     * @return Page of users.
+     */
     public Page<User> paginateUsers(ArrayList<User> users, Pageable pageable) {
 
         int currentPage = pageable.getPageNumber();
@@ -31,11 +37,16 @@ public class PaginationService {
             list = users.subList(startItem, toIndex);
         }
 
-        Page<User> page = new PageImpl<User>(list, PageRequest.of(currentPage, pageSize), users.size());
-
-        return page;
+        return new PageImpl<User>(list, PageRequest.of(currentPage, pageSize), users.size());
     }
 
+
+    /**
+     * Paginate list of lac users
+     * @param users The lac users to paginate
+     * @param pageable The page request with current page and page size.
+     * @return Page of lac users.
+     */
     public Page<LacUser> paginateLacUsers(ArrayList<LacUser> users, Pageable pageable) {
 
         int currentPage = pageable.getPageNumber();
@@ -50,11 +61,15 @@ public class PaginationService {
             list = users.subList(startItem, toIndex);
         }
 
-        Page<LacUser> page = new PageImpl<LacUser>(list, PageRequest.of(currentPage, pageSize), users.size());
-
-        return page;
+        return new PageImpl<LacUser>(list, PageRequest.of(currentPage, pageSize), users.size());
     }
 
+    /**
+     * Paginate list of meeting notes
+     * @param meetingNotes The meetingNotes to paginate
+     * @param pageable The page request with current page and page size.
+     * @return Page of meeting notes
+     */
     public Page<MeetingNote> paginateMeetingNotes(ArrayList<MeetingNote> meetingNotes, Pageable pageable) {
 
         int currentPage = pageable.getPageNumber();
@@ -69,11 +84,15 @@ public class PaginationService {
             list = meetingNotes.subList(startItem, toIndex);
         }
 
-        Page<MeetingNote> page = new PageImpl<MeetingNote>(list, PageRequest.of(currentPage, pageSize), meetingNotes.size());
-
-        return page;
+        return new PageImpl<MeetingNote>(list, PageRequest.of(currentPage, pageSize), meetingNotes.size());
     }
 
+    /**
+     * Paginate list of comments
+     * @param comments The comments to paginate
+     * @param pageable The page request with current page and page size.
+     * @return Page of comments.
+     */
     public Page<Comment> paginationComments(ArrayList<Comment> comments, Pageable pageable) {
 
         int currentPage = pageable.getPageNumber();
@@ -88,8 +107,6 @@ public class PaginationService {
             list = comments.subList(startItem, toIndex);
         }
 
-        Page<Comment> page = new PageImpl<Comment>(list, PageRequest.of(currentPage, pageSize), comments.size());
-
-        return page;
+        return new PageImpl<Comment>(list, PageRequest.of(currentPage, pageSize), comments.size());
     }
 }

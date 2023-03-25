@@ -41,7 +41,7 @@
           <div th:if="${socialWorkerUser == null}">
             <p class="card-text">There is no social worker assigned to you currently.</p>
           </div>
-          <div th:else>
+          <div th:if="${socialWorkerUser != null}">
             <h2 class="card-title">[[${socialWorkerUser.getFullName()}]]</h2>
             <p class="card-text">[[${socialWorkerUser.getEmail()}]]</p>
             <!--        <a href="#" class="btn btn-primary">Go somewhere</a>-->

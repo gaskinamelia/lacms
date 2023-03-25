@@ -61,13 +61,18 @@ public class MeetingNoteService {
      * @param socialWorkerUid The social worker uid
      * @return list of meeting notes
      */
-    public ArrayList<MeetingNote> getAllMeetingNotesForUser(String lacUid, String socialWorkerUid) {
+    public ArrayList<MeetingNote> getAllMeetingNotesForUser(String lacUid, User socialWorkerUser) {
+
         ArrayList<MeetingNote> result = new ArrayList<>();
+
+        if(socialWorkerUser == null) {
+            return result; // return empty list
+        }
 
         CollectionReference meetingNotes = firestore.collection("MeetingNotes");
 
         Query query = meetingNotes
-                .whereEqualTo("created_by_social_worker", socialWorkerUid)
+                .whereEqualTo("created_by_social_worker", socialWorkerUser.getUid())
                 .whereEqualTo("lac_user", lacUid)
                 .whereEqualTo("archived", false)
                 .whereEqualTo("deleted", false)
@@ -144,6 +149,12 @@ public class MeetingNoteService {
         return meetingNote;
     }
 
+    /**
+     * Change a string date variable to type local date time.
+     * @param date The date to change
+     * @return date The date variable that is now local date time type
+     * @throws ParseException
+     */
     public LocalDateTime convertStringDateToLocalDateTime(String date) throws ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm", Locale.ENGLISH);
 
@@ -153,6 +164,11 @@ public class MeetingNoteService {
         return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
     }
 
+    /**
+     * Delete a meeting note by meeting note id. Changes the deleted variable to true and sets the deleted_timestamp to now.
+     * Keeps it stored in the firestore for 30 days for retrieval.
+     * @param meetingNoteId The meeting note id to find to delete.
+     */
     public void deleteMeetingNote(String meetingNoteId) {
 
         DocumentReference documentReference = firestore.collection("MeetingNotes").document(meetingNoteId);
@@ -163,6 +179,10 @@ public class MeetingNoteService {
         //TODO: Add functionality to remove meeting note from firestore after it has been deleted for 30 days.
     }
 
+    /**
+     * Update a meeting note by meeting note. Updates all data variables, and sets the updated timestamp to now.
+     * @param meetingNote The meeting note to update
+     */
     public void updateMeetingNote(MeetingNote meetingNote) {
         DocumentReference documentReference = firestore.collection("MeetingNotes").document(meetingNote.getId());
 
@@ -185,6 +205,10 @@ public class MeetingNoteService {
         documentReference.update("archived", meetingNote.isArchived());
     }
 
+    /**
+     * Add a comment to a meeting note.
+     * @param comment The comment to add.
+     */
     public void addComments(Comment comment) {
         DocumentReference documentReference = firestore.collection("Comments").document();
 
@@ -202,6 +226,11 @@ public class MeetingNoteService {
         documentReference.set(data);
     }
 
+    /**
+     * Return all comments for a meeting note by meeting note id.
+     * @param meetingNoteId The meeting note id for the meeting note attached to the comments.
+     * @return Comments The list of comments that are linked to the meeting note.
+     */
     public ArrayList<Comment> getAllCommentsForMeetingNote(String meetingNoteId) {
         ArrayList<Comment> result = new ArrayList<>();
 
@@ -236,6 +265,11 @@ public class MeetingNoteService {
         return result;
     }
 
+    /**
+     * Return the most recent comment for meeting note by meeting note id.
+     * @param meetingId The meeting note id for the meeting note linked to the most recent comment.
+     * @return Comment The most recent comment or null if no comments for meeting note.
+     */
     public Comment getMostRecentCommentForMeetingId(String meetingId) {
         ArrayList<Comment> comments = getAllCommentsForMeetingNote(meetingId);
         if(comments.size() > 0 ){
@@ -245,6 +279,10 @@ public class MeetingNoteService {
         }
     }
 
+    /**
+     * Archive meeting note by meeting note id.
+     * @param meetingNoteId The meeting note id for meeting note to archive.
+     */
     public void archiveNote(String meetingNoteId) {
         DocumentReference documentReference = firestore.collection("MeetingNotes").document(meetingNoteId);
 

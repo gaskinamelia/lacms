@@ -4,7 +4,6 @@ import co.uk.lacms.Entity.LacUser;
 import co.uk.lacms.Entity.User;
 import co.uk.lacms.Entity.UserType;
 import co.uk.lacms.Form.SearchForm;
-import co.uk.lacms.Form.UpdateLacForm;
 import co.uk.lacms.Service.PaginationService;
 import co.uk.lacms.Service.SearchService;
 import co.uk.lacms.Service.SocialWorkerDashboardService;
@@ -128,7 +127,5 @@ public class SocialWorkerDashboard {
 
         return new ModelAndView("redirect:/sw/search?searchQuery=" + searchForm.getSearchQuery());
     }
-
-    //TODO: Search meeting notes
 
 }
