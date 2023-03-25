@@ -35,6 +35,12 @@ public class SearchService {
         this.meetingNoteService = meetingNoteService;
     }
 
+    /**
+     * Search firestore list of users that are lac users where the email of the user contains the query string.
+     * If there isn't a match with the query string then return empty list.
+     * @param queryString The query string to match with some part of the email in list of users
+     * @return users The list of lac users that match the query string or empty list.
+     */
     public ArrayList<LacUser> searchLacUser(String queryString) {
         ArrayList<LacUser> result = new ArrayList<>();
 
@@ -64,6 +70,14 @@ public class SearchService {
         return result;
     }
 
+    /**
+     * Search firestore list of users that are lac users where the email of the user contains
+     * the query string and the lacuser is linked to the social worker user.
+     * If there isn't a match with the query string then return empty list.
+     * @param queryString The query string to match with some part of the email in list of users
+     * @param socialWorkerUser The social worker user that is currently logged in
+     * @return users The list of lac users that match the query string or empty list.
+     */
     public ArrayList<LacUser> searchLacUserForSocialWorkerUser(String queryString, User socialWorkerUser) {
         ArrayList<LacUser> result = new ArrayList<>();
 
@@ -92,6 +106,15 @@ public class SearchService {
         return result;
     }
 
+    /**
+     * Search firestore list of meeting notes where the title contains query string.
+     * If there isn't a match with the query string then return empty list.
+     * @param lacUid The lac users uid that is linked to the meeting note
+     * @param socialWorkerUid The social worker user uid that is linked to the meeting note
+     * @param queryString The query string to match with some part of the title for the meeting note
+     * @param viewArchived Whether to include archived notes in the result or not
+     * @return meetingNote The list of meeting note that match the query string or empty list.
+     */
     public ArrayList<MeetingNote> searchMeetingNotes(String lacUid, String socialWorkerUid, String queryString, boolean viewArchived) {
         ArrayList<MeetingNote> result = new ArrayList<>();
 
