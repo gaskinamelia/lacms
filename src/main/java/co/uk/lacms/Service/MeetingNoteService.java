@@ -50,6 +50,7 @@ public class MeetingNoteService {
         data.put("updated_by", meetingNote.getUpdatedByUserUid());
         data.put("updated_date", meetingNote.getUpdatedDateTime());
         data.put("archived", meetingNote.isArchived());
+        data.put("deleted", false);
 
         documentReference.set(data);
     }
@@ -69,6 +70,7 @@ public class MeetingNoteService {
                 .whereEqualTo("created_by_social_worker", socialWorkerUid)
                 .whereEqualTo("lac_user", lacUid)
                 .whereEqualTo("archived", false)
+                .whereEqualTo("deleted", false)
                 .orderBy("created_date", Query.Direction.DESCENDING);
 
         ApiFuture<QuerySnapshot> querySnapshot = query.get();
@@ -152,7 +154,13 @@ public class MeetingNoteService {
     }
 
     public void deleteMeetingNote(String meetingNoteId) {
-        firestore.collection("MeetingNotes").document(meetingNoteId).delete();
+
+        DocumentReference documentReference = firestore.collection("MeetingNotes").document(meetingNoteId);
+
+        documentReference.update("deleted", true);
+        documentReference.update("deleted_timestamp", Date.from(Instant.now()));
+
+        //TODO: Add functionality to remove meeting note from firestore after it has been deleted for 30 days.
     }
 
     public void updateMeetingNote(MeetingNote meetingNote) {
