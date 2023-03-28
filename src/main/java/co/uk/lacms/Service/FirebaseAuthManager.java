@@ -27,11 +27,8 @@ import java.util.List;
 public class FirebaseAuthManager {
     private static final String BASE_URL = "https://identitytoolkit.googleapis.com/v1/accounts:";
     private static final String OPERATION_AUTH = "signInWithPassword";
-
     private static final String OPERATION_SIGN_UP = "signUp";
     private static final String OPERATION_ACCOUNT_INFO = "lookup";
-    private static final String OPERATION_SEND_PASSWORD_RESET = "getOobConfirmationCode";
-
     private final String firebaseKey;
     private static FirebaseAuthManager instance = null;
 
